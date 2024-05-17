@@ -5,16 +5,16 @@ const Card = ({ data, onPress, isExpanded }) => {
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={1}>
       <View style={[styles.card, isExpanded && styles.expandedCard]}>
-        <Text style={styles.title}>Zaaknummer: {data.zaaknummer}</Text>
+        <Text style={styles.title}>{data.zaaknummer}</Text>
+        <Text>{data.type}</Text>
+        <Text>{data.gemaaktOp}</Text>
+        <Text>{data.melder}</Text>
         {isExpanded && (
           <>
-            <Text>Type: {data.type}</Text>
-            <Text>Gemaakt op: {data.gemaaktOp}</Text>
             <Text>Licentie: {data.licentie}</Text>
             <Text>Prioriteit: {data.prioriteit}</Text>
             <Text>Fibo: {data.fibo}</Text>
             <Text>In de wacht: {data.inDeWacht}</Text>
-            <Text>Melder: {data.melder}</Text>
             <Text>Onderwerp: {data.onderwerp}</Text>
           </>
         )}
@@ -29,11 +29,11 @@ const CardGrid = () => {
   const generateDummyData = () => {
     const zaaknummers = Array.from({ length: 16 }, (_, index) => `DB-${index + 10000}-R1W${index % 3}`);
     const types = ['Type A', 'Type B', 'Type C'];
-    const gemaaktOp = '2022-05-01'; // Placeholder date
+    const gemaaktOp = '2022-05-01';
     const licenties = ['databalk', 'vasgoetable', 'inspecting', 'woonmacth', 'iris'];
     const fibo = Array.from({ length: 16 }, (_, index) => Math.floor(Math.random() * 13) + 1);
     const inDeWacht = ['Yes', 'No', 'Maybe'];
-    const melders = ['John Doe', 'Jane Smith', 'David Brown', 'Emma Johnson']; // Placeholder names
+    const melders = ['John Doe', 'Jane Smith', 'David Brown', 'Emma Johnson'];
     const onderwerp = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
     return zaaknummers.map((zaaknummer, index) => ({
       zaaknummer,
@@ -61,14 +61,16 @@ const CardGrid = () => {
   return (
     <TouchableWithoutFeedback onPress={handleMinimize}>
       <ScrollView contentContainerStyle={styles.container}>
-        {dummyData.map((data, index) => (
-          <Card
-            key={index}
-            data={data}
-            onPress={() => handleCardPress(index)}
-            isExpanded={expandedCard === index}
-          />
-        ))}
+        <View style={styles.gridContainer}>
+          {dummyData.map((data, index) => (
+            <Card
+              key={index}
+              data={data}
+              onPress={() => handleCardPress(index)}
+              isExpanded={expandedCard === index}
+            />
+          ))}
+        </View>
       </ScrollView>
     </TouchableWithoutFeedback>
   );
@@ -80,31 +82,34 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
+  gridContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
   card: {
-    width: '100%',
+    width: 180,
+    height: 100,
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 15,
+    padding: 10,
     marginBottom: 10,
+    marginRight: 5,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
   },
   expandedCard: {
-    flex: 1,
+    width: '48%',
+    height: 'auto',
     margin: 20,
     borderRadius: 10,
     backgroundColor: 'white',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,

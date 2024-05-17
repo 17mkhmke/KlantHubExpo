@@ -69,6 +69,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     backgroundColor: '#00A7DB',
     paddingTop: 40,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5, // for Android shadow
   },
   leftContainer: {
     flexDirection: 'row',

@@ -1,17 +1,21 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './../screens/HomeScreen';
 import ServiceScreen from './(services)/ServiceScreen';
 import LicentieScreen from './Licentie/LicentieScreen';
 import RelatieScreen from './Relatie/RelatieScreen';
 import OnboardingScreen from './Onboarding/OnboardScreen';
 import Header from './Header';
-import { StyleSheet, Image, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, Image, TouchableOpacity, Text, GestureResponderEvent } from 'react-native';
 
 const Tab = createBottomTabNavigator();
-const TabBarButton = ({ children, onPress }) => {
+interface TabBarButtonProps {
+  onPress: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
+  children?: React.ReactNode;
+}
+
+const TabBarButton: React.FC<TabBarButtonProps> = ({children, onPress }) => {
   return (
     <TouchableOpacity onPress={onPress} style={styles.tabBarButton}>
       {children}
@@ -37,7 +41,7 @@ const Navigation: React.FC = () => {
           options={({ route }) => ({
             header: () => <Header screenName={undefined} />,
             tabBarIcon: ({ focused, color, size }) => (
-              <Image source={focused ? require('./../../assets/ServiceIcon.png') : require('./../../assets/ServiceIcon.png')} style={[styles.tabBarIcon, { tintColor: color }]} />
+              <Image source={focused ? require('./../../assets/2. Icons/Service Blue.png') : require('./../../assets/ServiceIcon.png')} style={[styles.tabBarIcon, { tintColor: color }]} />
             ),
             tabBarButton: ({ onPress }) => (
               <TabBarButton onPress={onPress}>
@@ -53,11 +57,11 @@ const Navigation: React.FC = () => {
           options={({ route }) => ({
             header: () => <Header screenName={undefined} />,
             tabBarIcon: ({ focused, color, size }) => (
-              <Image source={focused ? require('./../../assets/LicentieIcon.png') : require('./../../assets/LicentieIcon.png')} style={[styles.tabBarIcon, { tintColor: color }]} />
+              <Image source={focused ? require('./../../assets/2. Icons/Licentie Blue.png') : require('./../../assets/2. Icons/Licentie White.png')} style={[styles.tabBarIcon, { tintColor: color }]} />
             ),
             tabBarButton: ({ onPress }) => (
               <TabBarButton onPress={onPress}>
-                <Image source={require('./../../assets/LicentieIcon.png')} style={[styles.tabBarIcon, { tintColor: '#fff' }]} />
+                <Image source={require('./../../assets/2. Icons/Licentie White.png')} style={[styles.tabBarIcon, { tintColor: '#fff' }]} />
                 <Text style={[styles.tabBarLabel, { color: '#fff' }]}>Licentie</Text>
               </TabBarButton>
             ),
@@ -83,12 +87,15 @@ const Navigation: React.FC = () => {
           options={({ route }) => ({
             header: () => <Header screenName={undefined} />,
             tabBarIcon: ({ focused, color, size }) => (
-              <Image source={focused ? require('./../../assets/RelatieIcon.png') : require('./../../assets/RelatieIcon.png')} style={[styles.tabBarIcon, { tintColor: color }]} />
+              <Image
+                source={focused ? require('./../../assets/2. Icons/Relatie Blue.png') : require('./../../assets/2. Icons/Relatie White.png')}
+                style={[styles.tabBarIcon, { tintColor: color }]}
+              />
             ),
             tabBarButton: ({ onPress }) => (
               <TabBarButton onPress={onPress}>
-                <Image source={require('./../../assets/RelatieIcon.png')} style={[styles.tabBarIcon, { tintColor: '#fff' }]} />
-                <Text style={[styles.tabBarLabel, { color: '#fff' }]}>Relatie</Text>
+                <Image source={require('./../../assets/2. Icons/Relatie White.png')} style={[styles.tabBarIcon, { tintColor: '#fff' }]} />
+                <Text style={[styles.tabBarLabel, { color: '#fff' }]}>Services</Text>
               </TabBarButton>
             ),
           })}
@@ -99,11 +106,11 @@ const Navigation: React.FC = () => {
           options={({ route }) => ({
             header: () => <Header screenName={undefined} />,
             tabBarIcon: ({ focused, color, size }) => (
-              <Image source={focused ? require('./../../assets/Onboardicon.png') : require('./../../assets/Onboardicon.png')} style={[styles.tabBarIcon, { tintColor: color }]} />
+              <Image source={focused ? require('./../../assets/2. Icons/Onboarding Blue.png') : require('./../../assets/2. Icons/Onboarding White.png')} style={[styles.tabBarIcon, { tintColor: color }]} />
             ),
             tabBarButton: ({ onPress }) => (
               <TabBarButton onPress={onPress}>
-                <Image source={require('./../../assets/Onboardicon.png')} style={[styles.tabBarIcon, { tintColor: '#fff' }]} />
+                <Image source={require('./../../assets/2. Icons/Onboarding White.png')} style={[styles.tabBarIcon, { tintColor: '#fff' }]} />
                 <Text style={[styles.tabBarLabel, { color: '#fff' }]}>Onboarding</Text>
               </TabBarButton>
             ),
