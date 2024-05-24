@@ -11,7 +11,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.DataBalk.KlantHub"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,6 +23,11 @@
     },
     "web": {
       "favicon": "./assets/DataBalk Embleem.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "48cfa1fe-c63c-4d45-b2d0-978c78d0dfcc"
+      }
     }
   }
 }
