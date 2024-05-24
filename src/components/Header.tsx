@@ -3,7 +3,7 @@ import { View, Image, Text, StyleSheet, Modal, TouchableOpacity, Animated, Dimen
 
 const Header = ({ screenName }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [modalAnimation] = useState(new Animated.Value(-300));
+  const [modalAnimation] = useState(new Animated.Value(Dimensions.get('window').width));
 
   const handleAvatarPress = () => {
     Animated.timing(modalAnimation, {
@@ -16,7 +16,7 @@ const Header = ({ screenName }) => {
 
   const handleModalClose = () => {
     Animated.timing(modalAnimation, {
-      toValue: -300,
+      toValue: Dimensions.get('window').width,
       duration: 300,
       useNativeDriver: true,
     }).start(() => setIsModalVisible(false));
@@ -89,8 +89,8 @@ const styles = StyleSheet.create({
     marginRight: 32,
   },
   avatar: {
-    width: 34,
-    height: 34,
+    width: 38,
+    height: 38,
     borderRadius: 16,
     marginRight: 8,
   },
@@ -101,15 +101,15 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
     paddingTop: 40,
-    alignItems: 'flex-start',
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(29, 88, 151, 0.6)',
     padding: 20,
     borderRadius: 10,
-    height: height,
+    height: height * 0.4,
     width: width * 0.8,
   },
   modalNameContainer: {
@@ -126,10 +126,12 @@ const styles = StyleSheet.create({
   modalName: {
     fontWeight: 'bold',
     fontSize: 16,
+    color: 'white',
   },
   modalText: {
     fontSize: 14,
     marginBottom: 5,
+    color: 'white',
   },
 });
 

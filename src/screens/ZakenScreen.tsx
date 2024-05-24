@@ -1,48 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Image, Switch } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import CardGrid from '../components/(services)/Zaken/ZakenCard';
-import ZakenForm from '../components/(services)/Zaken/ZakenForm';
-import FilterComponent from '../components/(services)/Zaken/Filte';
-import { Badge, Icon } from 'react-native-elements'
+import CardGrid from '../components/Zaken/ZakenCard';
+import ZakenForm from '../components/Zaken/ZakenForm';
+import FilterComponent from '../components/Zaken/Filte';
 
 const filterIcon = require('./../../assets/2. Icons/Filter White.png');
 const addZaak = require('./../../assets/2. Icons/Add New White.png');
+const searchIcon = require('./../../assets/2. Icons/Search White.png');
 const briefcaseIcon = require('./../../assets/2. Icons/Zaken Blue.png');
 
-const ZakenScreen = ({ navigation }) => {
+const ZakenScreen = () => {
   const [showForm, setShowForm] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [isSwitchOn, setIsSwitchOn] = useState(false);
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <View style={styles.headerRight}>
-          <View style={styles.badgeContainer}>
-            <Image source={briefcaseIcon} style={styles.briefcaseIcon} />
-            <Text style={styles.badgeText}>12 zaken</Text>
-          </View>
-          <View style={styles.switchContainer}>
-            <Switch
-              value={isSwitchOn}
-              onValueChange={setIsSwitchOn}
-              trackColor={{ false: '#767577', true: '#81b0ff' }}
-              thumbColor={isSwitchOn ? '#f5dd4b' : '#f4f3f4'}
-            />
-            <Text style={styles.switchLabel}>{isSwitchOn ? 'closeZaak' : 'openZaak'}</Text>
-          </View>
-          <TouchableOpacity onPress={() => setShowForm(true)} style={styles.headerButton}>
-            <Image source={addZaak} style={styles.headerIcon} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setShowFilter(!showFilter)} style={styles.headerButton}>
-            <Image source={filterIcon} style={styles.headerIcon} />
-          </TouchableOpacity>
-        </View>
-      ),
-    });
-  }, [navigation, showFilter, isSwitchOn]);
-
 
   const handleSubmit = (formData) => {
     console.log('Form submitted:', formData);
@@ -55,6 +26,36 @@ const ZakenScreen = ({ navigation }) => {
         colors={['#009ACE', '#00629A']}
         style={styles.background}
       />
+      <View style={styles.topContainer}>
+        <View style={styles.badgeContainer}>
+          <Image source={briefcaseIcon} style={styles.briefcaseIcon} />
+          <Text style={styles.badgeText}>12 zaken</Text>
+        </View>
+        <View style={styles.switchContainer}>
+          <Switch
+            value={isSwitchOn}
+            onValueChange={setIsSwitchOn}
+            trackColor={{ false: '#767577', true: '#81b0ff' }}
+            thumbColor={isSwitchOn ? '#f5dd4b' : '#f4f3f4'}
+          />
+          <Text style={styles.switchLabel}>{isSwitchOn ? 'closeZaak' : 'openZaak'}</Text>
+        </View>
+        <TouchableOpacity style={styles.headerButton}>
+          <View style={styles.iconContainer}>
+            <Image source={searchIcon} style={styles.headerIcon} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setShowForm(true)} style={styles.headerButton}>
+          <View style={styles.iconContainer}>
+            <Image source={addZaak} style={styles.headerIcon} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setShowFilter(!showFilter)} style={styles.headerButton}>
+          <View style={styles.iconContainer}>
+            <Image source={filterIcon} style={styles.headerIcon} />
+          </View>
+        </TouchableOpacity>
+      </View>
       <CardGrid />
       <ZakenForm visible={showForm} setVisible={setShowForm} onSubmit={handleSubmit} />
       {showFilter && <FilterComponent onClose={() => setShowFilter(false)} />}
@@ -75,9 +76,13 @@ const styles = StyleSheet.create({
     height: '100%',
     zIndex: -1,
   },
-  headerRight: {
+  topContainer: {
     flexDirection: 'row',
-    marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 5,
+    paddingTop: 2, 
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
   },
   badgeContainer: {
     flexDirection: 'row',
@@ -85,7 +90,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 15,
     padding: 5,
-    marginRight: 10,
   },
   briefcaseIcon: {
     width: 24,
@@ -99,7 +103,6 @@ const styles = StyleSheet.create({
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: 10,
   },
   switchLabel: {
     marginLeft: 5,
@@ -107,24 +110,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   headerButton: {
-    marginRight: 10,
     padding: 10,
     borderRadius: 5,
   },
+  iconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   headerIcon: {
     width: 24,
-    height: 24,
-    tintColor: 'white',
-  },
-  headerButtonText: {
-    width: 24,
-    fontSize: 30,
-    height: 24,
-    tintColor: 'white',
-  },
-  filterIcon: {
-    width: 24,
-    marginTop: 10,
     height: 24,
     tintColor: 'white',
   },

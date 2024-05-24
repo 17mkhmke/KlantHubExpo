@@ -5,10 +5,9 @@ const Card = ({ data, onPress, isExpanded }) => {
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={1}>
       <View style={[styles.card, isExpanded && styles.expandedCard]}>
-        <Text style={styles.title}>{data.zaaknummer}</Text>
-        <Text>{data.type}</Text>
+        <Text style={styles.title}>{data.onderwerp}</Text>
+        <Text>{data.zaaknummer}</Text>
         <Text>{data.gemaaktOp}</Text>
-        <Text>{data.melder}</Text>
         {isExpanded && (
           <>
             <Text>Licentie: {data.licentie}</Text>
@@ -34,7 +33,7 @@ const CardGrid = () => {
     const fibo = Array.from({ length: 16 }, (_, index) => Math.floor(Math.random() * 13) + 1);
     const inDeWacht = ['Yes', 'No', 'Maybe'];
     const melders = ['John Doe', 'Jane Smith', 'David Brown', 'Emma Johnson'];
-    const onderwerp = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+    const onderwerp = 'Lorem ipsum dolor sit amet';
     return zaaknummers.map((zaaknummer, index) => ({
       zaaknummer,
       type: types[index % 3],
@@ -90,7 +89,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: 180,
-    height: 100,
+    height: 120,
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 10,
