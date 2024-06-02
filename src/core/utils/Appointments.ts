@@ -1,5 +1,3 @@
-import { Appointment } from "./interfaces";
-
 const alexImage = require('./../../../assets/Afspraak/Alex Barnas.jpeg');
 const andreasImage = require('./../../../assets/Afspraak/Amdreas Arts.jpeg');
 const arnoudImage = require('./../../../assets/Afspraak/Arnoud van Vilet.jpeg');
@@ -31,7 +29,7 @@ const sjaakImage = require('./../../../assets/Afspraak/Sjaak van Esdonk.jpeg');
 const svenImage = require('./../../../assets/Afspraak/Sven van der Kooij.jpeg');
 const timImage = require('./../../../assets/Afspraak/Tim Zeeman.jpeg');
 const simonImage = require('./../../../assets/Afspraak/Simon Moyo.jpeg');
-
+import { Appointment } from "./interfaces";
 export const appointments: Appointment[] = [
   {
     name: "Alex Barnas",

@@ -7,6 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/logo.svg",
     "userInterfaceStyle": "light",
+    "entryPoint": "./index.js",
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -16,17 +17,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./asset/DataBalk Embleem.png",
+        "foregroundImage": "",
         "backgroundColor": "#0b80bfea"
       },
       "package": "com.anonymous.KlantHub"
     },
     "web": {
-      "favicon": "./assets/DataBalk Embleem.png"
+      "favicon": ""
     },
     "extra": {
       "eas": {
-        "projectId": "48cfa1fe-c63c-4d45-b2d0-978c78d0dfcc"
+        "projectId": "48cfa1fe-c63c-4d45-b2d0-978c78d0dfcc",
+        "redirectUri": "exp://10.0.0.66:8081"
       }
     }
   }

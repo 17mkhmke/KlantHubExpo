@@ -2,34 +2,42 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { appointments } from '../../core/utils/Appointments';
 import { Appointment } from '../../core/utils/interfaces';
-  
 
-const AfsprakenCards = () => {
-    return (
-      <ScrollView contentContainerStyle={styles.container}>
-        {appointments.map((appointment: Appointment, index: number) => (
-          <View key={index} style={styles.card}>
-            <Image source={appointment.image} style={styles.profileImage} />
-            <View style={styles.textContainer}>
-              <Text style={styles.name}>{appointment.name}</Text>
-              <Text style={styles.title}>{appointment.role}</Text>
-            </View>
-            <View style={styles.iconContainer}>
-              <TouchableOpacity>
-                <Image source={require('./../../../assets/2. Icons/Email Blue.png')} style={styles.icon} />
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Image source={require('./../../../assets/2. Icons/Bubble Blue.png')} style={styles.icon} />
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Image source={require('./../../../assets/2. Icons/Phone Blue.png')} style={styles.icon} />
-              </TouchableOpacity>
-            </View>
+interface AfsprakenCardsProps {
+  searchQuery: string;
+}
+
+const AfsprakenCards: React.FC<AfsprakenCardsProps> = ({ searchQuery }) => {
+  const filteredAppointments = appointments.filter(appointment =>
+    appointment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    appointment.role.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      {filteredAppointments.map((appointment: Appointment, index: number) => (
+        <View key={index} style={styles.card}>
+          <Image source={appointment.image} style={styles.profileImage} />
+          <View style={styles.textContainer}>
+            <Text style={styles.name}>{appointment.name}</Text>
+            <Text style={styles.title}>{appointment.role}</Text>
           </View>
-        ))}
-      </ScrollView>
-    );
-  };
+          <View style={styles.iconContainer}>
+            <TouchableOpacity>
+              <Image source={require('./../../../assets/2. Icons/Email Blue.png')} style={styles.icon} />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image source={require('./../../../assets/2. Icons/Bubble Blue.png')} style={styles.icon} />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Image source={require('./../../../assets/2. Icons/Phone Blue.png')} style={styles.icon} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      ))}
+    </ScrollView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

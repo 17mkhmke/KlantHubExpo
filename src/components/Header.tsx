@@ -1,9 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Image, Text, StyleSheet, Modal, TouchableOpacity, Animated, Dimensions, StatusBar } from 'react-native';
+// import { dataBalkRobotEndpoints, invokeDataBalkRobot, HttpMethod } from './../../services/dataBalkRobot';
 
-const Header = ({ screenName }) => {
+interface User {
+  avatar: string;
+  name: string;
+  email: string;
+  position: string;
+}
+
+interface HeaderProps {
+  screenName?: string;
+  user: User;
+}
+
+const Header: React.FC<HeaderProps> = ({ screenName, user }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalAnimation] = useState(new Animated.Value(Dimensions.get('window').width));
+  const [userData, setUserData] = useState<User>(user);
+
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const fetchedUserData = await invokeDataBalkRobot<User>(
+  //         dataBalkRobotEndpoints.getUserDetails,
+  //         HttpMethod.GET
+  //       );
+  //       setUserData(fetchedUserData);
+  //     } catch (error) {
+  //       console.error('Error fetching user data:', error);
+  //     }
+  //   };
+
+  //   fetchUserData();
+  // }, []);
 
   const handleAvatarPress = () => {
     Animated.timing(modalAnimation, {
@@ -31,7 +61,7 @@ const Header = ({ screenName }) => {
 
       <View style={styles.rightContainer}>
         <TouchableOpacity onPress={handleAvatarPress}>
-          <Image source={require('./../../assets/Me White.png')} style={styles.avatar} />
+          <Image source={{ uri: userData.avatar }} style={styles.avatar} />
         </TouchableOpacity>
         <Text style={styles.screenName}>{screenName}</Text>
       </View>
@@ -45,12 +75,11 @@ const Header = ({ screenName }) => {
         <TouchableOpacity style={styles.modalContainer} onPress={handleModalClose} activeOpacity={1}>
           <Animated.View style={[styles.modalContent, { transform: [{ translateX: modalAnimation }] }]}>
             <View style={styles.modalNameContainer}>
-              <Image source={require('./../../assets/Me White.png')} style={styles.modalAvatar} />
-              <Text style={styles.modalName}>Mkhuseli Mkeyiya</Text>
+              <Image source={{ uri: userData.avatar }} style={styles.modalAvatar} />
+              <Text style={styles.modalName}>{userData.name}</Text>
             </View>
-            <Text style={styles.modalText}>mkhuseli@databalk.nu</Text>
-            <Text style={styles.modalText}>Ontwikkler</Text>
-            <Text style={styles.modalText}>Tenant wisselen</Text>
+            <Text style={styles.modalText}>{userData.email}</Text>
+            <Text style={styles.modalText}>{userData.position}</Text>
           </Animated.View>
         </TouchableOpacity>
       </Modal>
@@ -84,7 +113,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 140, 
+    width: 140,
     height: 34,
     marginRight: 32,
   },
