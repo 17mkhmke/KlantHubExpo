@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, TextInput, StyleSheet, Image, TouchableOpacity, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AfsprakenCards from '../components/Afspraken/AfsprakenCard';
 import AfsprakenFilter from '../components/Afspraken/AfsprakenFilter';
@@ -8,6 +8,21 @@ const searchIcon = require('./../../assets/2. Icons/Search White.png');
 
 const ZakenScreen = () => {
   const [showFilter, setShowFilter] = useState(false);
+  const [isSearchMode, setIsSearchMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchIconClick = () => {
+    setIsSearchMode(true);
+  };
+
+  const handleSearchChange = (text) => {
+    setSearchQuery(text);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setIsSearchMode(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -16,15 +31,31 @@ const ZakenScreen = () => {
         style={styles.background}
       />
       <View style={styles.topContainer}>
-        <View style={styles.rightIcons}>
-          <TouchableOpacity style={styles.headerButton}>
-            <View style={styles.iconContainer}>
-              <Image source={searchIcon} style={styles.headerIcon} />
-            </View>
-          </TouchableOpacity>
-        </View>
+        {isSearchMode ? (
+          <View style={styles.searchInputContainer}>
+            <TextInput
+              style={styles.searchInput}
+              value={searchQuery}
+              onChangeText={handleSearchChange}
+              placeholder="Search..."
+              placeholderTextColor="#666"
+              autoFocus
+            />
+            <TouchableOpacity onPress={handleClearSearch} style={styles.clearButton}>
+              <Text style={styles.clearButtonText}>X</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.rightIcons}>
+            <TouchableOpacity style={styles.headerButton} onPress={handleSearchIconClick}>
+              <View style={styles.iconContainer}>
+                <Image source={searchIcon} style={styles.headerIcon} />
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
-      <AfsprakenCards />
+      <AfsprakenCards searchQuery={searchQuery} />
       {showFilter && <AfsprakenFilter onClose={() => setShowFilter(false)} />}
     </View>
   );
@@ -72,6 +103,27 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     tintColor: 'white',
+  },
+  searchInputContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+  },
+  searchInput: {
+    flex: 1,
+    height: 44,
+    color: 'black',
+  },
+  clearButton: {
+    marginLeft: 10,
+    padding: 5,
+  },
+  clearButtonText: {
+    fontSize: 18,
+    color: '#666',
   },
 });
 

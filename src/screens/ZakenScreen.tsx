@@ -8,12 +8,11 @@ import FilterComponent from '../components/Zaken/Filte';
 const filterIcon = require('./../../assets/2. Icons/Filter White.png');
 const addZaak = require('./../../assets/2. Icons/Add New White.png');
 const searchIcon = require('./../../assets/2. Icons/Search White.png');
-const briefcaseIcon = require('./../../assets/2. Icons/Zaken Blue.png');
+
 
 const ZakenScreen = () => {
   const [showForm, setShowForm] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
-  const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   const handleSubmit = (formData) => {
     console.log('Form submitted:', formData);
@@ -27,24 +26,7 @@ const ZakenScreen = () => {
         style={styles.background}
       />
       <View style={styles.topContainer}>
-        <View style={styles.badgeContainer}>
-          <Image source={briefcaseIcon} style={styles.briefcaseIcon} />
-          <Text style={styles.badgeText}>12 zaken</Text>
-        </View>
-        <View style={styles.switchContainer}>
-          <Switch
-            value={isSwitchOn}
-            onValueChange={setIsSwitchOn}
-            trackColor={{ false: '#767577', true: '#81b0ff' }}
-            thumbColor={isSwitchOn ? '#f5dd4b' : '#f4f3f4'}
-          />
-          <Text style={styles.switchLabel}>{isSwitchOn ? 'closeZaak' : 'openZaak'}</Text>
-        </View>
-        <TouchableOpacity style={styles.headerButton}>
-          <View style={styles.iconContainer}>
-            <Image source={searchIcon} style={styles.headerIcon} />
-          </View>
-        </TouchableOpacity>
+      
         <TouchableOpacity onPress={() => setShowForm(true)} style={styles.headerButton}>
           <View style={styles.iconContainer}>
             <Image source={addZaak} style={styles.headerIcon} />
@@ -53,6 +35,11 @@ const ZakenScreen = () => {
         <TouchableOpacity onPress={() => setShowFilter(!showFilter)} style={styles.headerButton}>
           <View style={styles.iconContainer}>
             <Image source={filterIcon} style={styles.headerIcon} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.headerButton}>
+          <View style={styles.iconContainer}>
+            <Image source={searchIcon} style={styles.headerIcon} />
           </View>
         </TouchableOpacity>
       </View>
@@ -77,9 +64,9 @@ const styles = StyleSheet.create({
     zIndex: -1,
   },
   topContainer: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
-    justifyContent: 'space-between',
+ 
     paddingHorizontal: 5,
     paddingTop: 2, 
     backgroundColor: 'rgba(0, 0, 0, 0.5)', 

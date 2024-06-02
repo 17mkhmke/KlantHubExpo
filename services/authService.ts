@@ -1,22 +1,46 @@
-// import { authorize } from 'react-native-app-auth';
+// src/services/authService.ts
 
-// const config = {   
-//     issuer: 'https://login.microsoftonline.com/a4a6e0c1-b531-4689-a0a0-1ad2250ba843',   
-//     clientId: 'adb142b4-830f-4842-8ddf-478f5d3af9db',   
-//     redirectUrl: 'msauth.klantHub://auth',   
-//     scopes: ['openid', 'profile', 'email'],   
-//     serviceConfiguration: {     
-//         authorizationEndpoint: 'https://login.microsoftonline.com/a4a6e0c1-b531-4689-a0a0-1ad2250ba843/oauth2/v2.0/authorize',     
-//         tokenEndpoint: 'https://login.microsoftonline.com/a4a6e0c1-b531-4689-a0a0-1ad2250ba843/oauth2/v2.0/token',   }, 
-//     };  
+import * as AuthSession from 'expo-auth-session';
+import config from './msalConfig';
 
-//     export const authenticate = async () => {
-//         try {
-//           const result = await authorize(config);
-//           console.log('Authorization Result:', result);
-//           return result;
-//         } catch (error) {
-//           console.error('Authorization Error:', error);
-//           throw error;
-//         }
-//       };
+const discovery = {
+  authorizationEndpoint: `https://login.microsoftonline.com/${config.tenantId}/oauth2/v2.0/authorize`,
+  tokenEndpoint: `https://login.microsoftonline.com/${config.tenantId}/oauth2/v2.0/token`,
+};
+
+export const authenticate = async () => {
+  try {
+    const redirectUri = AuthSession.makeRedirectUri({
+      scheme: config.redirectUri,
+    });
+
+    const authRequest = new AuthSession.AuthRequest({
+      clientId: config.clientId,
+      redirectUri,
+      scopes: config.scopes,
+    });
+
+    await authRequest.makeAuthUrlAsync(discovery);
+    const result = await authRequest.promptAsync(discovery);
+
+    if (result.type === 'success') {
+      const tokenResponse = await fetch(discovery.tokenEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `client_id=${config.clientId}&redirect_uri=${redirectUri}&grant_type=authorization_code&code=${result.params.code}&scope=${config.scopes.join(
+          ' '
+        )}`,
+      });
+
+      const token = await tokenResponse.json();
+      return token;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Authentication error:', error);
+    return null;
+  }
+};
