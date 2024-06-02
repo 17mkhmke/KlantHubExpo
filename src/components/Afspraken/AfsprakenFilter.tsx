@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 25,
+    top: 55,
     right: 18,
   },
   dateInput: {

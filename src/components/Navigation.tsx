@@ -145,9 +145,9 @@ const styles = StyleSheet.create({
   },
   whiteLine: {
     position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    height: 5,
+    bottom: -11.8,
+    width: '70%',
+    height: 4.5,
     backgroundColor: 'white',
   },
   backgroundIcon: {

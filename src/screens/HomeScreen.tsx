@@ -5,6 +5,7 @@ import AfsprakenCards from '../components/Afspraken/AfsprakenCard';
 import AfsprakenFilter from '../components/Afspraken/AfsprakenFilter';
 
 const searchIcon = require('./../../assets/2. Icons/Search White.png');
+const filterIcon = require('./../../assets/2. Icons/Filter White.png');
 
 const ZakenScreen = () => {
   const [showFilter, setShowFilter] = useState(false);
@@ -52,6 +53,11 @@ const ZakenScreen = () => {
                 <Image source={searchIcon} style={styles.headerIcon} />
               </View>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowFilter(!showFilter)} style={styles.headerButton}>
+          <View style={styles.iconContainer}>
+            <Image source={filterIcon} style={styles.headerIcon} />
+          </View>
+        </TouchableOpacity>
           </View>
         )}
       </View>
@@ -111,11 +117,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 5,
     paddingHorizontal: 10,
+    
   },
   searchInput: {
     flex: 1,
     height: 44,
     color: 'black',
+    
   },
   clearButton: {
     marginLeft: 10,

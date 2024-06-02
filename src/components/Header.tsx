@@ -61,7 +61,7 @@ const Header: React.FC<HeaderProps> = ({ screenName, user }) => {
 
       <View style={styles.rightContainer}>
         <TouchableOpacity onPress={handleAvatarPress}>
-          <Image source={{ uri: userData.avatar }} style={styles.avatar} />
+        <Image source={require('./../../assets/Me White.png')} style={styles.avatar} />
         </TouchableOpacity>
         <Text style={styles.screenName}>{screenName}</Text>
       </View>
@@ -75,7 +75,7 @@ const Header: React.FC<HeaderProps> = ({ screenName, user }) => {
         <TouchableOpacity style={styles.modalContainer} onPress={handleModalClose} activeOpacity={1}>
           <Animated.View style={[styles.modalContent, { transform: [{ translateX: modalAnimation }] }]}>
             <View style={styles.modalNameContainer}>
-              <Image source={{ uri: userData.avatar }} style={styles.modalAvatar} />
+            <Image source={require('./../../assets/Me White.png')} style={styles.modalAvatar} />
               <Text style={styles.modalName}>{userData.name}</Text>
             </View>
             <Text style={styles.modalText}>{userData.email}</Text>
