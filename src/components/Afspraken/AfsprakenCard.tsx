@@ -5,13 +5,28 @@ import { Appointment } from '../../core/utils/interfaces';
 
 interface AfsprakenCardsProps {
   searchQuery: string;
+  filters: {
+    verzoek: boolean;
+    insident: boolean;
+    kritiek: boolean;
+    hoog: boolean;
+  };
 }
 
-const AfsprakenCards: React.FC<AfsprakenCardsProps> = ({ searchQuery }) => {
-  const filteredAppointments = appointments.filter(appointment =>
-    appointment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    appointment.role.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+const AfsprakenCards: React.FC<AfsprakenCardsProps> = ({ searchQuery, filters }) => {
+  const filteredAppointments = appointments.filter(appointment => {
+    const matchesSearchQuery =
+      appointment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      appointment.role.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesFilters =
+      (!filters.verzoek || appointment.role === 'Service') &&
+      (!filters.insident || appointment.role === 'Onboarding') &&
+      (!filters.kritiek || appointment.role === 'Ontwikkeling') &&
+      (!filters.hoog || appointment.role === 'Management');
+    
+    return matchesSearchQuery && matchesFilters;
+  });
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

@@ -5,10 +5,9 @@ import CardGrid from '../components/Zaken/ZakenCard';
 import ZakenForm from '../components/Zaken/ZakenForm';
 import FilterComponent from '../components/Zaken/Filte';
 
-const filterIcon = require('./../../assets/2. Icons/Filter White.png');
 const addZaak = require('./../../assets/2. Icons/Add New White.png');
 const searchIcon = require('./../../assets/2. Icons/Search White.png');
-
+const filterIcon = require('./../../assets/2. Icons/Filter White.png');
 
 const ZakenScreen = () => {
   const [showForm, setShowForm] = useState(false);
