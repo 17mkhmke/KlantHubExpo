@@ -7,10 +7,16 @@ import AfsprakenFilter from '../components/Afspraken/AfsprakenFilter';
 const searchIcon = require('./../../assets/2. Icons/Search White.png');
 const filterIcon = require('./../../assets/2. Icons/Filter White.png');
 
-const ZakenScreen = () => {
+const AfsprakenScreen = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [isSearchMode, setIsSearchMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState({
+    verzoek: false,
+    insident: false,
+    kritiek: false,
+    hoog: false,
+  });
 
   const handleSearchIconClick = () => {
     setIsSearchMode(true);
@@ -23,6 +29,14 @@ const ZakenScreen = () => {
   const handleClearSearch = () => {
     setSearchQuery('');
     setIsSearchMode(false);
+  };
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+  };
+
+  const handleFilterSubmit = () => {
+    setShowFilter(false);
   };
 
   return (
@@ -54,15 +68,22 @@ const ZakenScreen = () => {
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setShowFilter(!showFilter)} style={styles.headerButton}>
-          <View style={styles.iconContainer}>
-            <Image source={filterIcon} style={styles.headerIcon} />
-          </View>
-        </TouchableOpacity>
+              <View style={styles.iconContainer}>
+                <Image source={filterIcon} style={styles.headerIcon} />
+              </View>
+            </TouchableOpacity>
           </View>
         )}
       </View>
-      <AfsprakenCards searchQuery={searchQuery} />
-      {showFilter && <AfsprakenFilter onClose={() => setShowFilter(false)} />}
+      <AfsprakenCards searchQuery={searchQuery} filters={filters} />
+      {showFilter && (
+        <AfsprakenFilter
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onSubmit={handleFilterSubmit}
+          onClose={() => setShowFilter(false)}
+        />
+      )}
     </View>
   );
 };
@@ -117,13 +138,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 5,
     paddingHorizontal: 10,
-    
   },
   searchInput: {
     flex: 1,
     height: 44,
     color: 'black',
-    
   },
   clearButton: {
     marginLeft: 10,
@@ -135,4 +154,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ZakenScreen;
+export default AfsprakenScreen;

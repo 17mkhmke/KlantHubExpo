@@ -1,8 +1,8 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Image, TouchableOpacity, GestureResponderEvent, View } from 'react-native';
-import AfspraakScreen from './../screens/HomeScreen';
-import LicentieScreen from './Licentie/LicentieScreen';
+import AfspraakScreen from '../screens/AfsprakenScreen';
+import BugsEnWensen from '../screens/bugsenWensenScreen';
 import RelatieScreen from './Relatie/RelatieScreen';
 import OnboardingScreen from './Onboarding/OnboardScreen';
 import ZakenScreen from '../screens/ZakenScreen';
@@ -62,7 +62,7 @@ const Navigation: React.FC<NavigationProps> = ({ user }) => {
       />
       <Tab.Screen
         name="Bugs en Wensen"
-        component={LicentieScreen}
+        component={BugsEnWensen}
         options={({ navigation }) => ({
           header: () => <Header user={user} />,
           tabBarIcon: ({ focused }) => (

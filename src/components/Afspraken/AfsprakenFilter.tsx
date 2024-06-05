@@ -1,80 +1,81 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Switch, TextInput, Modal, Platform } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView } from 'react-native';
 
-const AfsprakenFilter = ({ onClose }) => {
-  const [verzoekChecked, setVerzoekChecked] = useState(false);
-  const [insidentChecked, setInsidentChecked] = useState(false);
-  const [kritiekChecked, setKritiekChecked] = useState(false);
-  const [hoogChecked, setHoogChecked] = useState(false);
-  const [normaalChecked, setNormaalChecked] = useState(false);
-  const [laagChecked, setLaagChecked] = useState(false);
-  const [nieuwChecked, setNieuwChecked] = useState(false);
-  const [inBehandelingChecked, setInBehandelingChecked] = useState(false);
-  const [gereedChecked, setGereedChecked] = useState(false);
-  const [melder, setMelder] = useState(null);
-  const [melderOpen, setMelderOpen] = useState(false);
-  const [melderItems, setMelderItems] = useState([
-    { label: 'Jos Balk', value: 'jos_balk' },
-    { label: 'Martine Naiber', value: 'john_doe' },
-  ]);
-  const [gemaaktOp, setGemaaktOp] = useState<Date>(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [inDeWacht, setInDeWacht] = useState(false);
+interface AfsprakenFilterProps {
+  filters: {
+    verzoek: boolean;
+    insident: boolean;
+    kritiek: boolean;
+    hoog: boolean;
+  };
+  onFilterChange: (filters: any) => void;
+  onSubmit: () => void;
+  onClose: () => void;
+}
 
-  const onDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || gemaaktOp;
-    setShowDatePicker(Platform.OS === 'ios');
-    setGemaaktOp(currentDate);
+const AfsprakenFilter: React.FC<AfsprakenFilterProps> = ({ filters, onFilterChange, onSubmit, onClose }) => {
+  const [localFilters, setLocalFilters] = useState(filters);
+
+  const handleCheckboxChange = (key) => {
+    setLocalFilters({ ...localFilters, [key]: !localFilters[key] });
+  };
+
+  const handleSubmit = () => {
+    onFilterChange(localFilters);
+    onSubmit();
   };
 
   return (
     <Modal visible={true} animationType="slide" transparent>
-    <View style={styles.container}>
-         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-          <Text style={styles.closeButtonText}>X</Text>
-        </TouchableOpacity>
-      <Text style={styles.title}>Type</Text>
-      <View style={styles.section}>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setVerzoekChecked(!verzoekChecked)} style={styles.checkbox}>
-            {verzoekChecked && <View style={styles.checkmark} />}
+      <View style={styles.container}>
+        <ScrollView>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Service</Text>
-        </View>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setInsidentChecked(!insidentChecked)} style={styles.checkbox}>
-            {insidentChecked && <View style={styles.checkmark} />}
+          <Text style={styles.title}>Type</Text>
+          <View style={styles.section}>
+            <View style={styles.checkboxContainer}>
+              <TouchableOpacity onPress={() => handleCheckboxChange('verzoek')} style={styles.checkbox}>
+                {localFilters.verzoek && <View style={styles.checkmark} />}
+              </TouchableOpacity>
+              <Text style={styles.checkboxLabel}>Service</Text>
+            </View>
+            <View style={styles.checkboxContainer}>
+              <TouchableOpacity onPress={() => handleCheckboxChange('insident')} style={styles.checkbox}>
+                {localFilters.insident && <View style={styles.checkmark} />}
+              </TouchableOpacity>
+              <Text style={styles.checkboxLabel}>Onboarding</Text>
+            </View>
+            <View style={styles.checkboxContainer}>
+              <TouchableOpacity onPress={() => handleCheckboxChange('kritiek')} style={styles.checkbox}>
+                {localFilters.kritiek && <View style={styles.checkmark} />}
+              </TouchableOpacity>
+              <Text style={styles.checkboxLabel}>Ontwikkeling</Text>
+            </View>
+            <View style={styles.checkboxContainer}>
+              <TouchableOpacity onPress={() => handleCheckboxChange('hoog')} style={styles.checkbox}>
+                {localFilters.hoog && <View style={styles.checkmark} />}
+              </TouchableOpacity>
+              <Text style={styles.checkboxLabel}>Management</Text>
+            </View>
+          </View>
+          <TouchableOpacity onPress={handleSubmit} style={styles.submitButton}>
+            <Text style={styles.submitButtonText}>Indienen</Text>
           </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Onboarding</Text>
-        </View>
+        </ScrollView>
       </View>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setKritiekChecked(!kritiekChecked)} style={styles.checkbox}>
-            {kritiekChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Ontwikkeling</Text>
-        </View>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setHoogChecked(!hoogChecked)} style={styles.checkbox}>
-            {hoogChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Management</Text>
-        </View>
-        </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'rgba(29, 88, 151, 0.8)',
-        paddingTop: 50,
-        paddingBottom: 50,
-        paddingHorizontal: 20,
-      },
+  container: {
+    flex: 1,
+    backgroundColor: 'rgba(29, 88, 151, 0.8)',
+    paddingTop: 50,
+    paddingBottom: 50,
+    paddingHorizontal: 20,
+  },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -83,12 +84,6 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 15,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 5,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -115,24 +110,28 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
   },
-
-  closeButtonText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
-  },
   closeButton: {
     position: 'absolute',
     top: 55,
     right: 18,
   },
-  dateInput: {
-    backgroundColor: 'white',
-    borderRadius: 4,
-    padding: 10,
+  closeButtonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
   },
-  dateText: {
-    color: 'black',
+  submitButton: {
+    backgroundColor: '#006098',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  submitButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
+
 export default AfsprakenFilter;

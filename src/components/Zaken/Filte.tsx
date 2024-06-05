@@ -231,6 +231,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
+    top: 35,
   },
   closeButton: {
     position: 'absolute',
