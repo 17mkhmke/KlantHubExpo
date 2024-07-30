@@ -1,14 +1,20 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Image, TouchableOpacity, GestureResponderEvent, View } from 'react-native';
 import AfspraakScreen from '../screens/AfsprakenScreen';
 import BugsEnWensen from '../screens/bugsenWensenScreen';
 import RelatieScreen from './Relatie/RelatieScreen';
 import OnboardingScreen from './Onboarding/OnboardScreen';
 import ZakenScreen from '../screens/ZakenScreen';
+import VideosScreen from '../screens/releaseClips';
+import DetailedViewItem from './BugsenWensen/viewById';
 import Header from './Header';
+import ProductGrid from './Relatie/RelatieScreen';
+import ProductDetails from './Relatie/routekaartQuery';
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 interface TabBarButtonProps {
   onPress: (e: GestureResponderEvent) => void;
@@ -27,14 +33,14 @@ const TabBarButton: React.FC<TabBarButtonProps> = ({ onPress, focused, icon }) =
 
 interface NavigationProps {
   user: {
-    avatar: string;
+    photoUrl: string;
     name: string;
     email: string;
-    position: string;
+    role: string;
   };
 }
 
-const Navigation: React.FC<NavigationProps> = ({ user }) => {
+const TabNavigator: React.FC<NavigationProps> = ({ user }) => {
   return (
     <Tab.Navigator
       initialRouteName="Zaken"
@@ -90,7 +96,7 @@ const Navigation: React.FC<NavigationProps> = ({ user }) => {
       />
       <Tab.Screen
         name="Routerkaart"
-        component={RelatieScreen}
+        component={ProductGrid}
         options={({ navigation }) => ({
           header: () => <Header user={user} />,
           tabBarIcon: ({ focused }) => (
@@ -104,7 +110,7 @@ const Navigation: React.FC<NavigationProps> = ({ user }) => {
       />
       <Tab.Screen
         name="Clips"
-        component={OnboardingScreen}
+        component={VideosScreen}
         options={({ navigation }) => ({
           header: () => <Header user={user} />,
           tabBarIcon: ({ focused }) => (
@@ -117,6 +123,28 @@ const Navigation: React.FC<NavigationProps> = ({ user }) => {
         })}
       />
     </Tab.Navigator>
+  );
+};
+
+const Navigation: React.FC<NavigationProps> = ({ user }) => {
+  return (
+    <Stack.Navigator initialRouteName="TabNavigator">
+      <Stack.Screen
+        name="TabNavigator"
+        component={() => <TabNavigator user={user} />}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="DetailedViewItem"
+        component={DetailedViewItem}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ProductDetails"
+        component={ProductDetails}
+        options={{ title: 'Product Details' }}
+      />
+    </Stack.Navigator>
   );
 };
 

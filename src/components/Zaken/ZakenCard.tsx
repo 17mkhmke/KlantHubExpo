@@ -1,29 +1,76 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
+import { Incident } from '../../core/utils/interfaces';
 
-const Card = ({ data, onPress, isExpanded }) => {
+interface CardProps {
+  data: Incident;
+  onPress: () => void;
+  isExpanded: boolean;
+}
+
+const Card: React.FC<CardProps> = ({ data, onPress, isExpanded }) => {
+  console.log('Rendering card for:', data.zaaknummer);
+
+  const licentieIcons: { [key: string]: ImageSourcePropType } = {
+    'WOONMATCH': require('./../../../assets/Product Logo/Woonmatch.png'),
+    'INSPECTIC': require('./../../../assets/Product Logo/Inspectic.jpg'),
+    'IRIS CRM': require('./../../../assets/Product Logo/IRIS CRM.png'),
+    'IRIS': require('./../../../assets/Product Logo/7. IRIS.png'),
+    'IRIS CMS': require('./../../../assets/Product Logo/7. IRIS.png'),
+  };
+
+  const typeIcons: { [key: string]: ImageSourcePropType } = {
+    'Verzoek': require('./../../../assets/2. Icons/Verzoek Gradient.png'),
+    'Incident': require('./../../../assets/2. Icons/Incident Gradient.png'),
+  };
+
+  const fiboIcons: { [key: string]: { color: string; symbol: string } } = {
+    'Normal': { color: 'yellow', symbol: '^' },
+    'Kritiek': { color: 'black', symbol: '^' },
+    'Hoog': { color: 'red', symbol: '^' },
+  };
+
+  const defaultLicentieIcon = require('./../../../assets/Product Logo/7. IRIS.png');
+  const defaultTypeIcon = require('./../../../assets/2. Icons/Verzoek Gradient.png');
+
+  const licentieIcon = data.licentie && licentieIcons[data.licentie] ? licentieIcons[data.licentie] : defaultLicentieIcon;
+  const typeIcon = data.type && typeIcons[data.type] ? typeIcons[data.type] : defaultTypeIcon;
+  const fiboIcon = data.fibo && fiboIcons[data.fibo] ? fiboIcons[data.fibo] : { color: 'gray', symbol: '-' };
+
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={1}>
+    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.card, isExpanded && styles.expandedCard]}>
         <View style={styles.cardHeader}>
-          <Image source={require('./../../../assets/2. Icons/Iris.svg')} style={styles.avatar} />
-          <View>
-            <Text style={styles.title}>{data.onderwerp}</Text>
+          <Image 
+            source={licentieIcon} 
+            style={styles.avatar} 
+            defaultSource={defaultLicentieIcon}
+          />
+          <View style={styles.headerContent}>
+            <Text style={styles.title} numberOfLines={1}>{data.onderwerp}</Text>
             <View style={styles.infoRow}>
-             <Image source={require('./../../../assets/2. Icons/Verzoek Gradient.png')} style={styles.icon} />
+              <Image 
+                source={typeIcon} 
+                style={styles.icon} 
+                defaultSource={defaultTypeIcon}
+              />
               <Text style={styles.infoText}>{data.zaaknummer}</Text>
-              <Text style={styles.pr}>^</Text>
-              <Text style={styles.infoText}>{data.prioriteit}</Text>
-              <Image source={require('./../../../assets/2. Icons/Date Grey.png')} style={styles.icon} />
-              <Text style={styles.infoText}>{data.gemaaktOp}</Text>
+              <Text style={[styles.fiboSymbol, { color: fiboIcon.color }]}>{fiboIcon.symbol}</Text>
+              <Image 
+                source={require('./../../../assets/2. Icons/Date Grey.png')} 
+                style={styles.icon} 
+              />
+              <Text style={styles.infoText}>{new Date(data.gemaaktOp).toLocaleDateString()}</Text>
             </View>
           </View>
         </View>
         {isExpanded && (
           <View style={styles.expandedContent}>
-            <Text>Licentie: {data.licentie}</Text>
+            <Text>Type: {data.type}</Text>
+            <Text>Status: {data.status}</Text>
             <Text>Fibo: {data.fibo}</Text>
-            <Text>In de wacht: {data.inDeWacht}</Text>
+            <Text>Melder: {data.melder}</Text>
+            <Text>Behandelaar: {data.behandelaar}</Text>
           </View>
         )}
       </View>
@@ -31,65 +78,8 @@ const Card = ({ data, onPress, isExpanded }) => {
   );
 };
 
-const CardGrid = () => {
-  const [expandedCard, setExpandedCard] = useState(null);
-
-  const generateDummyData = () => {
-    const zaaknummers = Array.from({ length: 16 }, (_, index) => `DB-${index + 10000}-R1W${index % 3}`);
-    const types = ['Type A', 'Type B', 'Type C'];
-    const gemaaktOp = '2022-05-01';
-    const licenties = ['databalk', 'vasgoetable', 'inspecting', 'woonmacth', 'iris'];
-    const fibo = Array.from({ length: 16 }, (_, index) => Math.floor(Math.random() * 13) + 1);
-    const inDeWacht = ['Yes', 'No', 'Maybe'];
-    const melders = ['John Doe', 'Jane Smith', 'David Brown', 'Emma Johnson'];
-    const onderwerp = 'Test elastic pool zit vol';
-    return zaaknummers.map((zaaknummer, index) => ({
-      zaaknummer,
-      type: types[index % 3],
-      gemaaktOp,
-      licentie: licenties[Math.floor(Math.random() * licenties.length)],
-      prioriteit: 'Normal',
-      fibo: fibo[index],
-      inDeWacht: inDeWacht[index % 3],
-      melder: melders[Math.floor(Math.random() * melders.length)],
-      onderwerp,
-    }));
-  };
-
-  const handleCardPress = (index) => {
-    setExpandedCard(expandedCard === index ? null : index);
-  };
-
-  const dummyData = generateDummyData();
-
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.gridContainer}>
-        {dummyData.map((data, index) => (
-          <Card
-            key={index}
-            data={data}
-            onPress={() => handleCardPress(index)}
-            isExpanded={expandedCard === index}
-          />
-        ))}
-      </View>
-    </ScrollView>
-  );
-};
-
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-  },
-  gridContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
   card: {
-    width: '100%',
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 10,
@@ -101,23 +91,14 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   expandedCard: {
-    width: '100%',
     marginBottom: 20,
-    borderRadius: 10,
-    backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  pr: {
-    color: "yellow",
-    fontSize:16,
+  headerContent: {
+    flex: 1,
   },
   avatar: {
     width: 40,
@@ -128,11 +109,11 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 16,
+    marginBottom: 5,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 5,
   },
   icon: {
     width: 16,
@@ -143,9 +124,13 @@ const styles = StyleSheet.create({
     marginRight: 10,
     fontSize: 14,
   },
+  fiboSymbol: {
+    fontSize: 16,
+    marginRight: 10,
+  },
   expandedContent: {
     marginTop: 10,
   },
 });
 
-export default CardGrid;
+export default Card;

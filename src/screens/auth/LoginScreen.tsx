@@ -1,31 +1,21 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { authenticate } from '../../../services/authService';
+import { authenticateWithMicrosoftGraph, fetchUserDetails } from '../../../services/authService';
 
 interface LoginScreenProps {
-  onLoginSuccess: (userDetails: { avatar: string; name: string; email: string; position: string }) => void;
+  onLoginSuccess: (userDetails: any) => void;
 }
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
   const handleLogin = async () => {
     try {
-      const authResult = await authenticate();
-      if (authResult) {
-        console.log('Authentication successful:', authResult);
-
-        const userDetails = {
-          avatar: 'https://example.com/path/to/avatar.jpg',
-          name: 'Mkhuseli Mkeyiya',
-          email: 'mkhuseli@databalk.nu',
-          position: 'Ontwikkler',
-        };
-
-        onLoginSuccess(userDetails);
-      } else {
-        console.log('Authentication failed');
-      }
+      // Step 1: Authenticate with Microsoft Graph to get user email
+      await authenticateWithMicrosoftGraph();
+      const userDetails = await fetchUserDetails();
+      onLoginSuccess(userDetails);
     } catch (error) {
+      Alert.alert('Login error', 'Failed to authenticate. Please try again.');
       console.error('Login error:', error);
     }
   };
@@ -102,11 +92,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 20,
     textAlign: 'center',
-  },
-  microsoftLogo: {
-    width: 1,
-    height: 1,
-    marginHorizontal: 5,
   },
   loginButton: {
     flexDirection: 'row',
