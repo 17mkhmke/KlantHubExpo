@@ -1,0 +1,14 @@
+{
+    "client_id" : "adb142b4-830f-4842-8ddf-478f5d3af9db",
+    "authorization_user_agent" : "DEFAULT",
+    "redirect_uri" : "msauth://com.DataBalk.KlantHUb/tqTZDI%2Bpm%2FCG4E8ei%2BaYLf60GPs%3D",
+    "authorities" : [
+      {
+        "type": "AAD",
+        "audience": {
+          "type": "AzureADMultipleOrgs",
+          "tenant_id": "organizations"
+        }
+      }
+    ]
+  }

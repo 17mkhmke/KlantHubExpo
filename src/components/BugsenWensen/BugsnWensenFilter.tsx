@@ -1,137 +1,152 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Switch, TextInput, Modal, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Switch, ScrollView, Animated, Dimensions } from 'react-native';
+import { CheckBox } from 'react-native-elements';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
+const FilterComponent = ({ applyFilter, closeFilter }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [showBugs, setShowBugs] = useState(false);
+  const [showWensen, setShowWensen] = useState(false);
+  const slideAnim = useState(new Animated.Value(Dimensions.get('window').width))[0];
+  const navigation = useNavigation();
 
-const BugsnWensenFilter = ({ onClose }) => {
-  const [verzoekChecked, setVerzoekChecked] = useState(false);
-  const [insidentChecked, setInsidentChecked] = useState(false);
-  const [kritiekChecked, setKritiekChecked] = useState(false);
-  const [hoogChecked, setHoogChecked] = useState(false);
-  const [normaalChecked, setNormaalChecked] = useState(false);
-  const [laagChecked, setLaagChecked] = useState(false);
-  const [nieuwChecked, setNieuwChecked] = useState(false);
-  const [inBehandelingChecked, setInBehandelingChecked] = useState(false);
-  const [gereedChecked, setGereedChecked] = useState(false);
-  const [melder, setMelder] = useState(null);
-  const [melderOpen, setMelderOpen] = useState(false);
-  const [melderItems, setMelderItems] = useState([
-    { label: 'Jos Balk', value: 'jos_balk' },
-    { label: 'Martine Naiber', value: 'john_doe' },
-  ]);
-  const [gemaaktOp, setGemaaktOp] = useState<Date>(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [inDeWacht, setInDeWacht] = useState(false);
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
-  const onDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || gemaaktOp;
-    setShowDatePicker(Platform.OS === 'ios');
-    setGemaaktOp(currentDate);
+  const handleApplyFilter = () => {
+    const filterData = {
+      isOpen,
+      showBugs,
+      showWensen,
+    };
+    applyFilter(filterData);
+    handleCloseFilter();
+  };
+
+  const handleCloseFilter = () => {
+    Animated.timing(slideAnim, {
+      toValue: Dimensions.get('window').width,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => closeFilter());
   };
 
   return (
-    <Modal visible={true} animationType="slide" transparent>
-    <View style={styles.container}>
-         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+    <Animated.View style={[styles.filterContainer, { transform: [{ translateX: slideAnim }] }]}>
+      <LinearGradient colors={['rgba(29, 88, 151, 0.6)', 'rgba(29, 88, 151, 0.6)']} style={styles.background}>
+        <TouchableOpacity style={styles.closeButton} onPress={handleCloseFilter}>
           <Text style={styles.closeButtonText}>X</Text>
         </TouchableOpacity>
-      <Text style={styles.title}>Type</Text>
-      <View style={styles.section}>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setVerzoekChecked(!verzoekChecked)} style={styles.checkbox}>
-            {verzoekChecked && <View style={styles.checkmark} />}
+        <ScrollView contentContainerStyle={styles.container}>
+          <Text style={styles.title}>Filter</Text>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Bug/Wensen</Text>
+            <Switch
+              value={isOpen}
+              onValueChange={(value) => setIsOpen(value)}
+              thumbColor={isOpen ? '#00A7DB' : '#f4f3f4'}
+              trackColor={{ false: '#767577', true: '#81b0ff' }}
+            />
+            <Text style={styles.switchText}>{isOpen ? 'Open' : 'Closed'}</Text>
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Type</Text>
+            <CheckBox
+              title="Bugs"
+              checked={showBugs}
+              onPress={() => setShowBugs(!showBugs)}
+              containerStyle={styles.checkBoxContainer}
+              textStyle={styles.checkBoxText}
+              checkedColor="#00A7DB"
+            />
+            <CheckBox
+              title="Wensen"
+              checked={showWensen}
+              onPress={() => setShowWensen(!showWensen)}
+              containerStyle={styles.checkBoxContainer}
+              textStyle={styles.checkBoxText}
+              checkedColor="#00A7DB"
+            />
+          </View>
+          <TouchableOpacity style={styles.submitButton} onPress={handleApplyFilter}>
+            <Text style={styles.submitButtonText}>Indienen</Text>
           </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Service</Text>
-        </View>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setInsidentChecked(!insidentChecked)} style={styles.checkbox}>
-            {insidentChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Onboarding</Text>
-        </View>
-      </View>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setKritiekChecked(!kritiekChecked)} style={styles.checkbox}>
-            {kritiekChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Ontwikkeling</Text>
-        </View>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setHoogChecked(!hoogChecked)} style={styles.checkbox}>
-            {hoogChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Management</Text>
-        </View>
-        </View>
-    </Modal>
+        </ScrollView>
+      </LinearGradient>
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'rgba(29, 88, 151, 0.8)',
-        paddingTop: 50,
-        paddingBottom: 50,
-        paddingHorizontal: 20,
-      },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 20,
+  filterContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    width: '80%',
+    zIndex: 10,
   },
-  section: {
-    marginBottom: 15,
+  background: {
+    flex: 1,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 5,
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 1,
-    borderColor: 'white',
-    borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  checkmark: {
-    width: 18,
-    height: 18,
-    borderRadius: 2,
-    backgroundColor: 'white',
-  },
-  checkboxLabel: {
-    color: 'white',
-    fontSize: 20,
-  },
-
-  closeButtonText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
+  container: {
+    padding: 20,
+    paddingTop: 80,
   },
   closeButton: {
     position: 'absolute',
-    top: 55,
-    right: 18,
+    top: 40,
+    right: 20,
+    zIndex: 1,
   },
-  dateInput: {
-    backgroundColor: 'white',
-    borderRadius: 4,
-    padding: 10,
+  closeButtonText: {
+    fontSize: 24,
+    color: 'white',
   },
-  dateText: {
-    color: 'black',
+  title: {
+    fontSize: 24,
+    color: 'white',
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  label: {
+    color: 'white',
+    marginBottom: 10,
+    fontWeight: 'bold',
+  },
+  switchText: {
+    color: 'white',
+    marginTop: 10,
+  },
+  checkBoxContainer: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    padding: 0,
+    marginLeft: 0,
+  },
+  checkBoxText: {
+    color: 'white',
+  },
+  submitButton: {
+    backgroundColor: '#00A7DB',
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  submitButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
-export default BugsnWensenFilter;
+
+export default FilterComponent;

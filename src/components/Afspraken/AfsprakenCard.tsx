@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, Linking, Alert } from 'react-native';
 import { appointments } from '../../core/utils/Appointments';
 import { Appointment } from '../../core/utils/interfaces';
 
@@ -13,19 +13,39 @@ interface AfsprakenCardsProps {
   };
 }
 
+const openLink = (url: string) => {
+  Linking.canOpenURL(url).then(supported => {
+    if (supported) {
+      Linking.openURL(url);
+    } else {
+      Alert.alert("Error", "Unable to open link: " + url);
+    }
+  });
+};
+
+const filterAppointments = (appointment, filters) => {
+  const filterRoles = {
+    verzoek: ["Service Specialist"],
+    insident: ["Manager Onboarding", "Project Eigenaar", "Consultant"],
+    kritiek: ["Ontwikkelaar", "Manager Product", "Manager Ontwikkeling", "Product Eigenaar", "Data Specialist"],
+    hoog: ["Directeur", "Manager Verkoop", "Manager Organisatie", "Account Manager Verkoop"]
+  };
+
+  return (
+    (!filters.verzoek || filterRoles.verzoek.includes(appointment.role)) &&
+    (!filters.insident || filterRoles.insident.includes(appointment.role)) &&
+    (!filters.kritiek || filterRoles.kritiek.includes(appointment.role)) &&
+    (!filters.hoog || filterRoles.hoog.includes(appointment.role))
+  );
+};
+
 const AfsprakenCards: React.FC<AfsprakenCardsProps> = ({ searchQuery, filters }) => {
   const filteredAppointments = appointments.filter(appointment => {
     const matchesSearchQuery =
       appointment.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       appointment.role.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesFilters =
-      (!filters.verzoek || appointment.role === 'Service') &&
-      (!filters.insident || appointment.role === 'Onboarding') &&
-      (!filters.kritiek || appointment.role === 'Ontwikkeling') &&
-      (!filters.hoog || appointment.role === 'Management');
-    
-    return matchesSearchQuery && matchesFilters;
+
+    return matchesSearchQuery && filterAppointments(appointment, filters);
   });
 
   return (
@@ -38,13 +58,13 @@ const AfsprakenCards: React.FC<AfsprakenCardsProps> = ({ searchQuery, filters })
             <Text style={styles.title}>{appointment.role}</Text>
           </View>
           <View style={styles.iconContainer}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => openLink(`mailto:${appointment.email}`)}>
               <Image source={require('./../../../assets/2. Icons/Email Blue.png')} style={styles.icon} />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => openLink(`https://teams.microsoft.com/l/chat/0/0?users=${appointment.email}`)}>
               <Image source={require('./../../../assets/2. Icons/Bubble Blue.png')} style={styles.icon} />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => openLink(`tel:${appointment.email}`)}>
               <Image source={require('./../../../assets/2. Icons/Phone Blue.png')} style={styles.icon} />
             </TouchableOpacity>
           </View>

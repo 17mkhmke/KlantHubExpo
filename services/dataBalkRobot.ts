@@ -1,67 +1,45 @@
-// import { getToken } from "../src/core/utils/functions";
+import { getToken } from "../services/authService";
+import { HttpMethod } from "../src/core/utils/types";
+import axios, { Method } from 'axios';
 
-// export const dataBalkRobotEndpoints = {
-//   getUserDetails: "https://databalkrobotapi.azurewebsites.net/User/GetUserDetails/",
-//   getZaak: "https://databalkrobotapi.azurewebsites.net/Incident/GetIncidentById/",
-//   postZaak: "https://databalkrobotapi.azurewebsites.net/Incident/CreateIncident",
-//   getWeekClips: "https://databalkrobotapi.azurewebsites.net/WeekClip/GetWeekClipsForLicentie",
-// };
+export const dataBalkRobotEndpoints = {
+    getUserDetails: "https://databalkrobotapi.azurewebsites.net/User/GetUserDetails/",
+    getZaak: "https://databalkrobotapi.azurewebsites.net/Incident/GetIncidentById/",
+    postZaak: "https://databalkrobotapi.azurewebsites.net/Incident/CreateIncident",
+    getWeekClips: "https://databalkrobotapi.azurewebsites.net/WeekClip/GetWeekClipsForLicentie",
+    getActiveZaken: "https://databalkrobotapi.azurewebsites.net/Incident/GetActiveIncidentsForClient/",
+    getResolvedZaken: "https://databalkrobotapi.azurewebsites.net/Incident/GetResolvedIncidentsForClient/",
+};
 
-// export enum HttpMethod {
-//   GET = 'GET',
-//   POST = 'POST',
-// }
-// export const fetchUserDetails = async (token: string) => {
-//     try {
-//       const response = await fetch(dataBalkRobotEndpoints.getUserDetails, {
-//         method: HttpMethod.GET,
-//         headers: {
-//           'Authorization': `Bearer ${token}`,
-//           'Content-Type': 'application/json',
-//         },
-//       });
-  
-//       if (!response.ok) {
-//         throw new Error('Failed to fetch user details');
-//       }
-  
-//       const userDetails = await response.json();
-//       return userDetails;
-//     } catch (error) {
-//       console.error('Error fetching user details:', error);
-//       throw error;
-//     }
-//   };
-  
-// export const invokeDataBalkRobot = async <T>(endpoint: string, method: HttpMethod, body?: any): Promise<T> => {
-//   try {
-//     const token = await getToken();
+export const invokeDataBalkRobot = async <T>(
+    endpoint: string,
+    method: HttpMethod,
+    body?: any
+): Promise<T> => {
+    try {
+        const token = await getToken('dataBalk');
+        console.log('Request details:', { endpoint, method, token });
 
-//     const headers = new Headers();
-//     headers.append("Content-Type", "application/json");
-//     headers.append("Authorization", `Bearer ${token}`);
+        const response = await axios({
+            url: endpoint,
+            method: method as Method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            data: body ? JSON.stringify(body) : undefined,
+        });
 
-//     const requestOptions: RequestInit = {
-//       method,
-//       headers,
-//       body: body ? JSON.stringify(body) : undefined,
-//     };
+        console.log('Response status:', response.status);
 
-//     const response = await fetch(endpoint, requestOptions);
+        if (response.status !== 200) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-//     if (!response.ok) {
-//       throw new Error('Failed to fetch data');
-//     }
-
-//     const contentLength = response.headers.get('content-length');
-//     if (contentLength && parseInt(contentLength) === 0) {
-//       throw new Error('Empty response');
-//     }
-
-//     const data = await response.json() as T;
-//     return data;
-//   } catch (error: any) {
-//     console.error('Error fetching data:', error);
-//     throw error;
-//   }
-// };
+        const data: T = response.data;
+        return data;
+    } catch (error: any) {
+        console.error('Error in invokeDataBalkRobot:', error);
+        throw error;
+    }
+};
