@@ -4,7 +4,12 @@ import { CheckBox } from 'react-native-elements';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 
-const FilterComponent = ({ applyFilter, closeFilter }) => {
+interface FilterComponentProps {
+  applyFilter: (filterData: { isOpen: boolean; showBugs: boolean; showWensen: boolean }) => void;
+  closeFilter: () => void;
+}
+
+const FilterComponent: React.FC<FilterComponentProps> = ({ applyFilter, closeFilter }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showBugs, setShowBugs] = useState(false);
   const [showWensen, setShowWensen] = useState(false);

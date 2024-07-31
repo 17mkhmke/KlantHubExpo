@@ -28,7 +28,6 @@ const truncateTitle = (title: string, length: number = 35): string => {
   return title;
 };
 
-// Icons
 const searchIcon = require('./../../assets/2. Icons/Search White.png');
 const filterIcon = require('./../../assets/2. Icons/Filter White.png');
 
