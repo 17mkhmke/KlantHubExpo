@@ -5,16 +5,19 @@ import { StyleSheet, Image, TouchableOpacity, GestureResponderEvent, View } from
 import AfspraakScreen from '../screens/AfsprakenScreen';
 import BugsEnWensen from '../screens/bugsenWensenScreen';
 import RelatieScreen from './Relatie/RelatieScreen';
-import OnboardingScreen from './Onboarding/OnboardScreen';
+import OnboardingScreen from './Kennisbank/KnowledgeArticleDetailScreen';
 import ZakenScreen from '../screens/ZakenScreen';
-import VideosScreen from '../screens/releaseClips';
 import DetailedViewItem from './BugsenWensen/viewById';
 import Header from './Header';
 import ProductGrid from './Relatie/RelatieScreen';
 import ProductDetails from './Relatie/routekaartQuery';
+import KnowledgeArticles from '../screens/knowledgeArticles';
+import KnowledgeArticleDetailScreen from './Kennisbank/KnowledgeArticleDetailScreen';
+import IncidentDetail from './Zaken/IncidentDetail'; // Import the IncidentDetail screen
+import { RootStackParamList } from './../core/utils/types';
 
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 
 interface TabBarButtonProps {
   onPress: (e: GestureResponderEvent) => void;
@@ -109,15 +112,15 @@ const TabNavigator: React.FC<NavigationProps> = ({ user }) => {
         })}
       />
       <Tab.Screen
-        name="Clips"
-        component={VideosScreen}
+        name="KnowledgeArticles"
+        component={KnowledgeArticles}
         options={({ navigation }) => ({
           header: () => <Header user={user} />,
           tabBarIcon: ({ focused }) => (
             <TabBarButton
               focused={focused}
               icon={require('./../../assets/2. Icons/Clips White.png')}
-              onPress={() => navigation.navigate('Clips')}
+              onPress={() => navigation.navigate('KnowledgeArticles')}
             />
           ),
         })}
@@ -143,6 +146,19 @@ const Navigation: React.FC<NavigationProps> = ({ user }) => {
         name="ProductDetails"
         component={ProductDetails}
         options={{ title: 'Product Details' }}
+      />
+      <Stack.Screen
+        name="KnowledgeArticleDetail"
+        component={KnowledgeArticleDetailScreen}
+        options={({ navigation }) => ({
+          header: () => <Header user={user} />,
+        })}/>
+      <Stack.Screen
+        name="IncidentDetail"
+        component={IncidentDetail}
+        options={({ route }) => ({
+          header: () => <Header user={user} screenName={`Incident ${route.params.incident.zaaknummer}`} />,
+        })}
       />
     </Stack.Navigator>
   );

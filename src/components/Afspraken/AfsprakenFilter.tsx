@@ -1,22 +1,26 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView } from 'react-native';
 
+// Define a type for the filter keys
+type FilterKey = 'verzoek' | 'insident' | 'kritiek' | 'hoog';
+
 interface AfsprakenFilterProps {
-  filters: {
-    verzoek: boolean;
-    insident: boolean;
-    kritiek: boolean;
-    hoog: boolean;
-  };
-  onFilterChange: (filters: any) => void;
+  filters: Record<FilterKey, boolean>; // Use Record with FilterKey for filters
+  onFilterChange: (filters: Record<FilterKey, boolean>) => void; // Correct typing for onFilterChange
   onSubmit: () => void;
   onClose: () => void;
 }
 
-const AfsprakenFilter: React.FC<AfsprakenFilterProps> = ({ filters, onFilterChange, onSubmit, onClose }) => {
+const AfsprakenFilter: React.FC<AfsprakenFilterProps> = ({
+  filters,
+  onFilterChange,
+  onSubmit,
+  onClose,
+}) => {
   const [localFilters, setLocalFilters] = useState(filters);
 
-  const handleCheckboxChange = (key) => {
+  // Use FilterKey type for the key parameter
+  const handleCheckboxChange = (key: FilterKey) => {
     setLocalFilters({ ...localFilters, [key]: !localFilters[key] });
   };
 
@@ -35,25 +39,37 @@ const AfsprakenFilter: React.FC<AfsprakenFilterProps> = ({ filters, onFilterChan
           <Text style={styles.title}>Type</Text>
           <View style={styles.section}>
             <View style={styles.checkboxContainer}>
-              <TouchableOpacity onPress={() => handleCheckboxChange('verzoek')} style={styles.checkbox}>
+              <TouchableOpacity
+                onPress={() => handleCheckboxChange('verzoek')}
+                style={styles.checkbox}
+              >
                 {localFilters.verzoek && <View style={styles.checkmark} />}
               </TouchableOpacity>
               <Text style={styles.checkboxLabel}>Service</Text>
             </View>
             <View style={styles.checkboxContainer}>
-              <TouchableOpacity onPress={() => handleCheckboxChange('insident')} style={styles.checkbox}>
+              <TouchableOpacity
+                onPress={() => handleCheckboxChange('insident')}
+                style={styles.checkbox}
+              >
                 {localFilters.insident && <View style={styles.checkmark} />}
               </TouchableOpacity>
               <Text style={styles.checkboxLabel}>Onboarding</Text>
             </View>
             <View style={styles.checkboxContainer}>
-              <TouchableOpacity onPress={() => handleCheckboxChange('kritiek')} style={styles.checkbox}>
+              <TouchableOpacity
+                onPress={() => handleCheckboxChange('kritiek')}
+                style={styles.checkbox}
+              >
                 {localFilters.kritiek && <View style={styles.checkmark} />}
               </TouchableOpacity>
               <Text style={styles.checkboxLabel}>Ontwikkeling</Text>
             </View>
             <View style={styles.checkboxContainer}>
-              <TouchableOpacity onPress={() => handleCheckboxChange('hoog')} style={styles.checkbox}>
+              <TouchableOpacity
+                onPress={() => handleCheckboxChange('hoog')}
+                style={styles.checkbox}
+              >
                 {localFilters.hoog && <View style={styles.checkmark} />}
               </TouchableOpacity>
               <Text style={styles.checkboxLabel}>Management</Text>

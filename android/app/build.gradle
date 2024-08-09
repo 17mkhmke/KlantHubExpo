@@ -96,10 +96,10 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            storeFile file('klanthub-key.keystore')
+            storePassword 'databalk2024@'
+            keyAlias 'klanthub-key-alias'
+            keyPassword 'databalk2024@'
         }
     }
     buildTypes {

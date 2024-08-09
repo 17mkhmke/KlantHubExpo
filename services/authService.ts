@@ -1,7 +1,5 @@
 import * as AuthSession from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { dataBalkRobotEndpoints } from './dataBalkRobot';
-import { HttpMethod } from "../src/core/utils/types";
 
 const microsoftGraphDiscovery = {
   authorizationEndpoint: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
@@ -9,9 +7,17 @@ const microsoftGraphDiscovery = {
 };
 
 const dataBalkDiscovery = {
-  authorizationEndpoint: 'https://login.microsoftonline.com/a4a6e0c1-b531-4689-a0a0-1ad2250ba843/oauth2/v2.0/authorize',
-  tokenEndpoint: 'https://login.microsoftonline.com/a4a6e0c1-b531-4689-a0a0-1ad2250ba843/oauth2/v2.0/token',
+  authorizationEndpoint: `https://login.microsoftonline.com/${process.env.NEXT_PUBLIC_TENANT_ID}/oauth2/v2.0/authorize`,
+  tokenEndpoint: `https://login.microsoftonline.com/${process.env.NEXT_PUBLIC_TENANT_ID}/oauth2/v2.0/token`,
 };
+
+const ticketProxyDiscovery = {
+  authorizationEndpoint: `https://login.microsoftonline.com/${process.env.NEXT_PUBLIC_TENANT_ID}/oauth2/v2.0/authorize`,
+  tokenEndpoint: `https://login.microsoftonline.com/${process.env.NEXT_PUBLIC_TENANT_ID}/oauth2/v2.0/token`,
+};
+
+const MICROSOFT_GRAPH_CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID || '';
+const TICKET_PROXY_CLIENT_ID = process.env.NEXT_PUBLIC_TICKETPROXY_CLIENT_ID || '';
 
 interface AuthResult {
   accessToken: string;
@@ -19,12 +25,22 @@ interface AuthResult {
   expiresIn: number;
 }
 
-const exchangeCodeForToken = async (code: string, codeVerifier: string, redirectUri: string, discovery: typeof microsoftGraphDiscovery): Promise<AuthResult> => {
-  const clientId = 'adb142b4-830f-4842-8ddf-478f5d3af9db';
+const GRAPH_SCOPES = 'User.Read openid profile offline_access';
+const DATABALK_SCOPES = process.env.NEXT_PUBLIC_DATABALK_ROBOT_SCOPE || '';
+const TICKETPROXY_SCOPES = process.env.NEXT_PUBLIC_DATABALK_ROBOT_SCOPE || '';
+
+const exchangeCodeForToken = async (
+  code: string,
+  codeVerifier: string,
+  redirectUri: string,
+  discovery: { authorizationEndpoint: string, tokenEndpoint: string },
+  clientId: string,
+  scope: string
+): Promise<AuthResult> => {
   const params = new URLSearchParams({
     client_id: clientId,
-    scope: discovery === microsoftGraphDiscovery ? 'User.Read' : 'api://ddbce1b6-ea7d-408e-9b52-5eebe91cf895/read.data',
-    code: code,
+    scope,
+    code,
     redirect_uri: redirectUri,
     grant_type: 'authorization_code',
     code_verifier: codeVerifier,
@@ -43,7 +59,7 @@ const exchangeCodeForToken = async (code: string, codeVerifier: string, redirect
 
   return {
     accessToken: json.access_token,
-    refreshToken: json.refresh_token || null,
+    refreshToken: json.refresh_token || '',
     expiresIn: json.expires_in,
   };
 };
@@ -70,75 +86,17 @@ const getTokenFromStorage = async (key: string): Promise<string | null> => {
   }
 };
 
-export const authenticateWithMicrosoftGraph = async (): Promise<void> => {
-  try {
-    const clientId = 'adb142b4-830f-4842-8ddf-478f5d3af9db';
-    const redirectUri = AuthSession.makeRedirectUri();
-    const scopes = ['User.Read'];
-
-    const request = new AuthSession.AuthRequest({
-      clientId,
-      scopes,
-      redirectUri,
-      usePKCE: true,
-    });
-
-    const result = await request.promptAsync(microsoftGraphDiscovery);
-
-    console.log('Authentication result for Microsoft Graph:', result);
-
-    if (result.type === 'success' && result.params && result.params.code) {
-      const tokens = await exchangeCodeForToken(result.params.code, request.codeVerifier as string, redirectUri, microsoftGraphDiscovery);
-      await storeToken('msGraphAccessToken', tokens.accessToken);
-      await storeToken('msGraphRefreshToken', tokens.refreshToken);
-      await storeToken('msGraphTokenExpiration', (Date.now() + tokens.expiresIn * 1000).toString());
-    } else {
-      throw new Error(`Authentication failed: ${result.type}`);
-    }
-  } catch (error) {
-    console.error('Microsoft Graph authentication error:', error);
-    throw error;
-  }
-};
-
-export const authenticateWithDataBalkAPI = async (): Promise<void> => {
-  try {
-    const clientId = 'adb142b4-830f-4842-8ddf-478f5d3af9db';
-    const redirectUri = AuthSession.makeRedirectUri();
-    const scopes = ['api://ddbce1b6-ea7d-408e-9b52-5eebe91cf895/read.data'];
-
-    const request = new AuthSession.AuthRequest({
-      clientId,
-      scopes,
-      redirectUri,
-      usePKCE: true,
-    });
-
-    const result = await request.promptAsync(dataBalkDiscovery);
-
-    console.log('Authentication result for DataBalk API:', result);
-
-    if (result.type === 'success' && result.params && result.params.code) {
-      const tokens = await exchangeCodeForToken(result.params.code, request.codeVerifier as string, redirectUri, dataBalkDiscovery);
-      await storeToken('dataBalkAccessToken', tokens.accessToken);
-      await storeToken('dataBalkRefreshToken', tokens.refreshToken);
-      await storeToken('dataBalkTokenExpiration', (Date.now() + tokens.expiresIn * 1000).toString());
-    } else {
-      throw new Error(`Authentication failed: ${result.type}`);
-    }
-  } catch (error) {
-    console.error('DataBalk API authentication error:', error);
-    throw error;
-  }
-};
-
-const refreshAccessToken = async (refreshToken: string, discovery: typeof microsoftGraphDiscovery): Promise<AuthResult> => {
-  const clientId = 'adb142b4-830f-4842-8ddf-478f5d3af9db';
+// Refresh tokens when they expire
+const refreshAccessToken = async (
+  refreshToken: string,
+  scope: string,
+  discovery: { authorizationEndpoint: string, tokenEndpoint: string },
+  clientId: string,
+): Promise<AuthResult> => {
   const redirectUri = AuthSession.makeRedirectUri();
-
   const params = new URLSearchParams({
     client_id: clientId,
-    scope: discovery === microsoftGraphDiscovery ? 'User.Read' : 'api://ddbce1b6-ea7d-408e-9b52-5eebe91cf895/read.data',
+    scope,
     refresh_token: refreshToken,
     grant_type: 'refresh_token',
     redirect_uri: redirectUri,
@@ -157,37 +115,117 @@ const refreshAccessToken = async (refreshToken: string, discovery: typeof micros
 
   return {
     accessToken: json.access_token,
-    refreshToken: json.refresh_token,
+    refreshToken: json.refresh_token || '',
     expiresIn: json.expires_in,
   };
 };
 
-export const getToken = async (keyPrefix: string): Promise<string> => {
+// Unified authentication function for all APIs
+export const authenticateAllAPIs = async (): Promise<void> => {
+  const redirectUri = AuthSession.makeRedirectUri();
+
+  // Microsoft Graph authentication
+  const graphRequest = new AuthSession.AuthRequest({
+    clientId: MICROSOFT_GRAPH_CLIENT_ID,
+    scopes: GRAPH_SCOPES.split(' '),
+    redirectUri,
+    usePKCE: true,
+  });
+
+  const graphResult = await graphRequest.promptAsync(microsoftGraphDiscovery);
+  if (graphResult.type !== 'success' || !graphResult.params || !graphResult.params.code) {
+    throw new Error(`Microsoft Graph authentication failed: ${graphResult.type}`);
+  }
+
+  const graphTokens = await exchangeCodeForToken(
+    graphResult.params.code,
+    graphRequest.codeVerifier as string,
+    redirectUri,
+    microsoftGraphDiscovery,
+    MICROSOFT_GRAPH_CLIENT_ID,
+    GRAPH_SCOPES
+  );
+
+  await storeToken('msGraphAccessToken', graphTokens.accessToken);
+  await storeToken('msGraphRefreshToken', graphTokens.refreshToken);
+  await storeToken('msGraphTokenExpiration', (Date.now() + graphTokens.expiresIn * 1000).toString());
+
+  const dataBalkRequest = new AuthSession.AuthRequest({
+    clientId: MICROSOFT_GRAPH_CLIENT_ID,
+    scopes: DATABALK_SCOPES.split(' '),
+    redirectUri,
+    usePKCE: true,
+  });
+
+  const dataBalkResult = await dataBalkRequest.promptAsync(dataBalkDiscovery);
+  if (dataBalkResult.type !== 'success' || !dataBalkResult.params || !dataBalkResult.params.code) {
+    throw new Error(`DataBalkRobot authentication failed: ${dataBalkResult.type}`);
+  }
+
+  const dataBalkTokens = await exchangeCodeForToken(
+    dataBalkResult.params.code,
+    dataBalkRequest.codeVerifier as string,
+    redirectUri,
+    dataBalkDiscovery,
+    MICROSOFT_GRAPH_CLIENT_ID,
+    DATABALK_SCOPES
+  );
+
+  await storeToken('dataBalkAccessToken', dataBalkTokens.accessToken);
+  await storeToken('dataBalkRefreshToken', dataBalkTokens.refreshToken);
+  await storeToken('dataBalkTokenExpiration', (Date.now() + dataBalkTokens.expiresIn * 1000).toString());
+
+  const ticketProxyRequest = new AuthSession.AuthRequest({
+    clientId: TICKET_PROXY_CLIENT_ID, 
+    scopes: TICKETPROXY_SCOPES.split(' '),
+    redirectUri,
+    usePKCE: true,
+  });
+
+  const ticketProxyResult = await ticketProxyRequest.promptAsync(ticketProxyDiscovery);
+  if (ticketProxyResult.type !== 'success' || !ticketProxyResult.params || !ticketProxyResult.params.code) {
+    throw new Error(`TicketProxy authentication failed: ${ticketProxyResult.type}`);
+  }
+
+  const ticketProxyTokens = await exchangeCodeForToken(
+    ticketProxyResult.params.code,
+    ticketProxyRequest.codeVerifier as string,
+    redirectUri,
+    ticketProxyDiscovery,
+    TICKET_PROXY_CLIENT_ID,
+    TICKETPROXY_SCOPES
+  );
+
+  await storeToken('ticketProxyAccessToken', ticketProxyTokens.accessToken);
+  await storeToken('ticketProxyRefreshToken', ticketProxyTokens.refreshToken);
+  await storeToken('ticketProxyTokenExpiration', (Date.now() + ticketProxyTokens.expiresIn * 1000).toString());
+};
+
+// Get token for a specific service
+export const getToken = async (keyPrefix: string, scope: string, discovery: { authorizationEndpoint: string, tokenEndpoint: string }): Promise<string> => {
   const accessToken = await getTokenFromStorage(`${keyPrefix}AccessToken`);
   const expiration = await getTokenFromStorage(`${keyPrefix}TokenExpiration`);
-  
-  console.log(`${keyPrefix} Access Token:`, accessToken);
-  console.log(`${keyPrefix} Token Expiration:`, expiration);
 
   if (accessToken && expiration && parseInt(expiration) > Date.now()) {
     return accessToken;
   }
-  
-  const refreshToken = await getTokenFromStorage(`${keyPrefix}RefreshToken`);
-  console.log(`${keyPrefix} Refresh Token:`, refreshToken);
 
-  if (refreshToken) {
-    const newAuth = await refreshAccessToken(refreshToken, keyPrefix === 'msGraph' ? microsoftGraphDiscovery : dataBalkDiscovery);
-    await storeToken(`${keyPrefix}AccessToken`, newAuth.accessToken);
-    await storeToken(`${keyPrefix}RefreshToken`, newAuth.refreshToken);
-    await storeToken(`${keyPrefix}TokenExpiration`, (Date.now() + newAuth.expiresIn * 1000).toString());
-    return newAuth.accessToken;
-  }
-  
-  throw new Error('No valid token available');
+  const refreshToken = await getTokenFromStorage(`${keyPrefix}RefreshToken`);
+  if (!refreshToken) throw new Error('No valid token available');
+
+  // Determine the client ID to use based on the keyPrefix
+  const clientId = keyPrefix === 'ticketProxy' ? TICKET_PROXY_CLIENT_ID : MICROSOFT_GRAPH_CLIENT_ID;
+
+  const newTokens = await refreshAccessToken(refreshToken, scope, discovery, clientId);
+  await storeToken(`${keyPrefix}AccessToken`, newTokens.accessToken);
+  await storeToken(`${keyPrefix}RefreshToken`, newTokens.refreshToken);
+  await storeToken(`${keyPrefix}TokenExpiration`, (Date.now() + newTokens.expiresIn * 1000).toString());
+
+  return newTokens.accessToken;
 };
 
-export const fetchUserEmail = async (accessToken: string): Promise<string> => {
+// Fetch user details from Microsoft Graph
+export const fetchUserDetailsFromMicrosoftGraph = async (accessToken: string): Promise<UserDetails> => {
   const response = await fetch('https://graph.microsoft.com/v1.0/me', {
     method: 'GET',
     headers: {
@@ -198,60 +236,53 @@ export const fetchUserEmail = async (accessToken: string): Promise<string> => {
 
   const json = await response.json();
   if (!response.ok) {
-    throw new Error(`Failed to fetch user email: ${json.error.message || json.error}`);
+    throw new Error(`Failed to fetch user details: ${json.error.message || json.error}`);
   }
 
-  return json.mail || json.userPrincipalName;
-};
+  // Fetch the user's profile photo
+  const photoResponse = await fetch('https://graph.microsoft.com/v1.0/me/photo/$value', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  });
 
-export const fetchUserDetailsFromMicrosoftGraph = async () => {
-  try {
-    const msGraphToken = await getToken('msGraph');
-    const email = await fetchUserEmail(msGraphToken);
-    console.log('User Email:', email);
-
-    // You can extend this function to fetch more user details if needed
-    return { email };
-  } catch (error) {
-    console.error('Error fetching user details:', error);
-    throw error;
+  if (!photoResponse.ok) {
+    console.error('Failed to fetch profile photo:', photoResponse.statusText);
+    return {
+      name: json.displayName,
+      email: json.mail || json.userPrincipalName,
+      role: json.jobTitle || '',
+      photoUrl: '',
+    };
   }
+
+  // Convert the photo blob to a Base64-encoded string
+  const photoBlob = await photoResponse.blob();
+  const reader = new FileReader();
+
+  const photoUrl = await new Promise<string>((resolve, reject) => {
+    reader.onloadend = () => {
+      resolve(reader.result as string);
+    };
+    reader.onerror = () => {
+      reject('Failed to convert blob to base64');
+    };
+    reader.readAsDataURL(photoBlob);
+  });
+
+  return {
+    name: json.displayName,
+    email: json.mail || json.userPrincipalName,
+    role: json.jobTitle || '',
+    photoUrl, 
+  };
 };
 
-export const fetchUserDetails = async () => {
-  try {
-    // Step 1: Authenticate with Microsoft Graph to get user email
-    await authenticateWithMicrosoftGraph();
-    const userDetailsFromGraph = await fetchUserDetailsFromMicrosoftGraph();
-
-    // Step 2: Authenticate with DataBalk API to get user details
-    await authenticateWithDataBalkAPI();
-    const dataBalkToken = await getToken('dataBalk');
-    console.log('DataBalk API Token:', dataBalkToken);
-
-    const userDetailsEndpoint = `${dataBalkRobotEndpoints.getUserDetails}${userDetailsFromGraph.email}`;
-    console.log('User Details Endpoint:', userDetailsEndpoint);
-
-    const response = await fetch(userDetailsEndpoint, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${dataBalkToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error fetching user details:', response.status, response.statusText, errorText);
-      throw new Error(`Failed to fetch user details: ${response.status} ${response.statusText}`);
-    }
-
-    const dataBalkUser = await response.json();
-    console.log('DataBalk User:', dataBalkUser);
-
-    return dataBalkUser;
-  } catch (error) {
-    console.error('Error fetching user details:', error);
-    throw error;
-  }
-};
+// User details interface
+interface UserDetails {
+  photoUrl: string;
+  name: string;
+  email: string;
+  role: string;
+}

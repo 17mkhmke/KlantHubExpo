@@ -1,15 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ImageSourcePropType } from 'react-native';
 import { Incident } from '../../core/utils/interfaces';
+import { useNavigation } from '@react-navigation/native';
 
 interface CardProps {
   data: Incident;
-  onPress: () => void;
-  isExpanded: boolean;
 }
 
-const Card: React.FC<CardProps> = ({ data, onPress, isExpanded }) => {
-  console.log('Rendering card for:', data.zaaknummer);
+const Card: React.FC<CardProps> = ({ data }) => {
+  const navigation = useNavigation();
 
   const licentieIcons: { [key: string]: ImageSourcePropType } = {
     'WOONMATCH': require('./../../../assets/Product Logo/Woonmatch.png'),
@@ -38,41 +37,21 @@ const Card: React.FC<CardProps> = ({ data, onPress, isExpanded }) => {
   const fiboIcon = data.fibo && fiboIcons[data.fibo] ? fiboIcons[data.fibo] : { color: 'gray', symbol: '-' };
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-      <View style={[styles.card, isExpanded && styles.expandedCard]}>
+    <TouchableOpacity onPress={() => navigation.navigate('IncidentDetail', { incident: data })} activeOpacity={0.7}>
+      <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Image 
-            source={licentieIcon} 
-            style={styles.avatar} 
-            defaultSource={defaultLicentieIcon}
-          />
+          <Image source={licentieIcon} style={styles.avatar} defaultSource={defaultLicentieIcon} />
           <View style={styles.headerContent}>
             <Text style={styles.title} numberOfLines={1}>{data.onderwerp}</Text>
             <View style={styles.infoRow}>
-              <Image 
-                source={typeIcon} 
-                style={styles.icon} 
-                defaultSource={defaultTypeIcon}
-              />
+              <Image source={typeIcon} style={styles.icon} defaultSource={defaultTypeIcon} />
               <Text style={styles.infoText}>{data.zaaknummer}</Text>
               <Text style={[styles.fiboSymbol, { color: fiboIcon.color }]}>{fiboIcon.symbol}</Text>
-              <Image 
-                source={require('./../../../assets/2. Icons/Date Grey.png')} 
-                style={styles.icon} 
-              />
+              <Image source={require('./../../../assets/2. Icons/Date Grey.png')} style={styles.icon} />
               <Text style={styles.infoText}>{new Date(data.gemaaktOp).toLocaleDateString()}</Text>
             </View>
           </View>
         </View>
-        {isExpanded && (
-          <View style={styles.expandedContent}>
-            <Text>Type: {data.type}</Text>
-            <Text>Status: {data.status}</Text>
-            <Text>Fibo: {data.fibo}</Text>
-            <Text>Melder: {data.melder}</Text>
-            <Text>Behandelaar: {data.behandelaar}</Text>
-          </View>
-        )}
       </View>
     </TouchableOpacity>
   );
@@ -89,9 +68,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-  },
-  expandedCard: {
-    marginBottom: 20,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -127,9 +103,6 @@ const styles = StyleSheet.create({
   fiboSymbol: {
     fontSize: 16,
     marginRight: 10,
-  },
-  expandedContent: {
-    marginTop: 10,
   },
 });
 

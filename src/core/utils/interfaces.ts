@@ -148,3 +148,31 @@ export interface IncidentPage {
     isActive?: boolean;
     devopsPath: string;
   }
+  export interface KnowledgeArticle {
+    knowledgeArticleId: string;
+    title: string;
+    product: string;
+    isInternal: boolean;
+    description: string;
+    modifiedOn: Date;
+    keywords: string;
+    knowledgeArticleViews: number;
+    ratingCount: number;
+    articlePublicNumber: string;
+}
+
+export interface KnowledgeArticleDetail {
+    knowledgeArticleId: string;
+    title: string;
+    file?: string;
+    content: string;
+    isInternal: boolean;
+    isPrimary: boolean;
+    description: string;
+    articlePublicNumber: string;
+    versionNumber: number;
+    createdOn: Date;
+    keywords: string;
+    knowledgeArticleViews: number;
+    ratingCount: number;
+}

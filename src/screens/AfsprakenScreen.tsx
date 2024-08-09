@@ -7,11 +7,19 @@ import AfsprakenFilter from '../components/Afspraken/AfsprakenFilter';
 const searchIcon = require('./../../assets/2. Icons/Search White.png');
 const filterIcon = require('./../../assets/2. Icons/Filter White.png');
 
+// Define a type for the filters object
+interface Filters {
+  verzoek: boolean;
+  insident: boolean;
+  kritiek: boolean;
+  hoog: boolean;
+}
+
 const AfsprakenScreen = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [isSearchMode, setIsSearchMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Filters>({
     verzoek: false,
     insident: false,
     kritiek: false,
@@ -22,7 +30,8 @@ const AfsprakenScreen = () => {
     setIsSearchMode(true);
   };
 
-  const handleSearchChange = (text) => {
+  // Explicitly define the type for the 'text' parameter
+  const handleSearchChange = (text: string) => {
     setSearchQuery(text);
   };
 
@@ -31,7 +40,8 @@ const AfsprakenScreen = () => {
     setIsSearchMode(false);
   };
 
-  const handleFilterChange = (newFilters) => {
+  // Explicitly define the type for the 'newFilters' parameter
+  const handleFilterChange = (newFilters: Filters) => {
     setFilters(newFilters);
   };
 
@@ -51,7 +61,7 @@ const AfsprakenScreen = () => {
             <TextInput
               style={styles.searchInput}
               value={searchQuery}
-              onChangeText={handleSearchChange}
+              onChangeText={handleSearchChange} // Typing issue fixed here
               placeholder="Search..."
               placeholderTextColor="#666"
               autoFocus

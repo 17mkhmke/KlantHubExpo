@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { invokeTicketProxy, ticketProxyEndpoints } from '../../../services/ticketProxy'; // Adjust the import path accordingly
-import { WorkItem } from '../../core/utils/interfaces';
+import { invokeTicketProxy, ticketProxyEndpoints } from '../../../services/ticketProxy'; 
 
 interface WorkItemResponse {
   workItems: WorkItem[];

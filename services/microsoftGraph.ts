@@ -6,7 +6,7 @@ export const graphConfig = {
     graphScheduleMeeting: "https://graph.microsoft.com/v1.0/me/events",
     graphCalenderView: "https://graph.microsoft.com/v1.0/me/calendarview",
     scopes: {
-        scopes: ["User.Read","Calendars.Read", "Calendars.Read.Shared", "Calendars.ReadWrite", "Calendars.ReadWrite.Shared", "openid", "profile", "offline_access", 'api://ddbce1b6-ea7d-408e-9b52-5eebe91cf895/read.data']
+        scopes: ["User.Read","Calendars.Read", "Calendars.Read.Shared", "Calendars.ReadWrite", "Calendars.ReadWrite.Shared", "openid", "profile", "offline_access"]
     }
 };
 

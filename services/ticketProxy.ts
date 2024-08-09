@@ -1,6 +1,12 @@
 import { getToken } from "../services/authService";
 import { HttpMethod } from "../src/core/utils/types";
 
+const ticketProxyDiscovery = {
+  authorizationEndpoint: 'https://login.microsoftonline.com/a4a6e0c1-b531-4689-a0a0-1ad2250ba843/oauth2/v2.0/authorize',
+  tokenEndpoint: 'https://login.microsoftonline.com/a4a6e0c1-b531-4689-a0a0-1ad2250ba843/oauth2/v2.0/token',
+};
+
+const TICKETPROXY_SCOPES = 'api://ddbce1b6-ea7d-408e-9b52-5eebe91cf895/read.data';
 export const ticketProxyEndpoints = {
     getQuery: "https://databalk-ticket-proxy.azurewebsites.net/v1/devops/query/",
     getDevOpsCase: "https://databalk-ticket-proxy.azurewebsites.net/v1/devops/workitem",
@@ -12,7 +18,7 @@ export const invokeTicketProxy = async <T>(
     body?: any
 ): Promise<T> => {
     try {
-        const token = await getToken('dataBalk');
+        const token = await getToken('ticketProxy', TICKETPROXY_SCOPES, ticketProxyDiscovery);
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json; charset=utf-8");
@@ -24,28 +30,14 @@ export const invokeTicketProxy = async <T>(
             body: body ? JSON.stringify(body) : undefined,
         };
 
-        console.log('Request details:', { endpoint, method, headers: Object.fromEntries(headers) });
-
         const response = await fetch(endpoint, requestOptions);
 
-        console.log('Response status:', response.status);
-        console.log('Response headers:', Object.fromEntries(response.headers));
-
-        const responseText = await response.text();
-        console.log('Response text:', responseText.substring(0, 200) + '...'); // Log first 200 chars
-
         if (!response.ok) {
+            const responseText = await response.text();
             throw new Error(`HTTP error! status: ${response.status}, body: ${responseText}`);
         }
 
-        let data: T;
-        try {
-            data = JSON.parse(responseText) as T;
-        } catch (parseError) {
-            console.error('Error parsing JSON:', parseError);
-            throw new Error('Failed to parse response as JSON');
-        }
-
+        const data: T = await response.json();
         return data;
     } catch (error: any) {
         console.error('Error in invokeTicketProxy:', error);

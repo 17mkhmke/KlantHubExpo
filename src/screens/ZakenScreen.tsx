@@ -30,14 +30,10 @@ const ZakenScreen: React.FC = () => {
 
       const response = await invokeDataBalkRobot<Incident[]>(endpoint, 'GET');
 
-      console.log('Raw API response:', JSON.stringify(response, null, 2));
 
       if (!Array.isArray(response)) {
         throw new Error('Invalid response format: Response is not an array');
       }
-
-      // Log the first few items of the response for debugging
-      console.log('First few incidents:', response.slice(0, 3));
 
       setIncidents(response);
       setLoading(false);

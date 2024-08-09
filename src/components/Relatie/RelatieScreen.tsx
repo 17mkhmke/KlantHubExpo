@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     top: 0,
-    height: 900,
+    height: 5500,
     zIndex: -1,
   },
   image: {
@@ -49,5 +49,4 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
 });
-
 export default ProductGrid;

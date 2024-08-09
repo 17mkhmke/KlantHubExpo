@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Switch, TextInput, Modal, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Switch, Modal, Platform } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
-const FilterComponent = ({ onClose }) => {
+interface FilterComponentProps {
+  onClose: () => void; // Type for the onClose prop
+}
+
+const FilterComponent: React.FC<FilterComponentProps> = ({ onClose }) => {
   const [verzoekChecked, setVerzoekChecked] = useState(false);
   const [insidentChecked, setInsidentChecked] = useState(false);
   const [kritiekChecked, setKritiekChecked] = useState(false);
@@ -13,7 +17,7 @@ const FilterComponent = ({ onClose }) => {
   const [nieuwChecked, setNieuwChecked] = useState(false);
   const [inBehandelingChecked, setInBehandelingChecked] = useState(false);
   const [gereedChecked, setGereedChecked] = useState(false);
-  const [melder, setMelder] = useState(null);
+  const [melder, setMelder] = useState<string | null>(null); // Specify the type of melder
   const [melderOpen, setMelderOpen] = useState(false);
   const [melderItems, setMelderItems] = useState([
     { label: 'Jos Balk', value: 'jos_balk' },
@@ -23,7 +27,8 @@ const FilterComponent = ({ onClose }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [inDeWacht, setInDeWacht] = useState(false);
 
-  const onDateChange = (event, selectedDate) => {
+  // Define the types for event and selectedDate
+  const onDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     const currentDate = selectedDate || gemaaktOp;
     setShowDatePicker(Platform.OS === 'ios');
     setGemaaktOp(currentDate);
@@ -31,76 +36,76 @@ const FilterComponent = ({ onClose }) => {
 
   return (
     <Modal visible={true} animationType="slide" transparent>
-    <View style={styles.container}>
-         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+      <View style={styles.container}>
+        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
           <Text style={styles.closeButtonText}>X</Text>
         </TouchableOpacity>
-      <Text style={styles.title}>Filter</Text>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Type</Text>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setVerzoekChecked(!verzoekChecked)} style={styles.checkbox}>
-            {verzoekChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Verzoek</Text>
+        <Text style={styles.title}>Filter</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Type</Text>
+          <View style={styles.checkboxContainer}>
+            <TouchableOpacity onPress={() => setVerzoekChecked(!verzoekChecked)} style={styles.checkbox}>
+              {verzoekChecked && <View style={styles.checkmark} />}
+            </TouchableOpacity>
+            <Text style={styles.checkboxLabel}>Verzoek</Text>
+          </View>
+          <View style={styles.checkboxContainer}>
+            <TouchableOpacity onPress={() => setInsidentChecked(!insidentChecked)} style={styles.checkbox}>
+              {insidentChecked && <View style={styles.checkmark} />}
+            </TouchableOpacity>
+            <Text style={styles.checkboxLabel}>Incident</Text>
+          </View>
         </View>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setInsidentChecked(!insidentChecked)} style={styles.checkbox}>
-            {insidentChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Incident</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Prioriteit</Text>
+          <View style={styles.checkboxContainer}>
+            <TouchableOpacity onPress={() => setKritiekChecked(!kritiekChecked)} style={styles.checkbox}>
+              {kritiekChecked && <View style={styles.checkmark} />}
+            </TouchableOpacity>
+            <Text style={styles.checkboxLabel}>Kritiek</Text>
+          </View>
+          <View style={styles.checkboxContainer}>
+            <TouchableOpacity onPress={() => setHoogChecked(!hoogChecked)} style={styles.checkbox}>
+              {hoogChecked && <View style={styles.checkmark} />}
+            </TouchableOpacity>
+            <Text style={styles.checkboxLabel}>Hoog</Text>
+          </View>
+          <View style={styles.checkboxContainer}>
+            <TouchableOpacity onPress={() => setNormaalChecked(!normaalChecked)} style={styles.checkbox}>
+              {normaalChecked && <View style={styles.checkmark} />}
+            </TouchableOpacity>
+            <Text style={styles.checkboxLabel}>Normaal</Text>
+          </View>
+          <View style={styles.checkboxContainer}>
+            <TouchableOpacity onPress={() => setLaagChecked(!laagChecked)} style={styles.checkbox}>
+              {laagChecked && <View style={styles.checkmark} />}
+            </TouchableOpacity>
+            <Text style={styles.checkboxLabel}>Laag</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Prioriteit</Text>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setKritiekChecked(!kritiekChecked)} style={styles.checkbox}>
-            {kritiekChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Kritiek</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Status</Text>
+          <View style={styles.checkboxContainer}>
+            <TouchableOpacity onPress={() => setNieuwChecked(!nieuwChecked)} style={styles.checkbox}>
+              {nieuwChecked && <View style={styles.checkmark} />}
+            </TouchableOpacity>
+            <Text style={styles.checkboxLabel}>Nieuw</Text>
+          </View>
+          <View style={styles.checkboxContainer}>
+            <TouchableOpacity onPress={() => setInBehandelingChecked(!inBehandelingChecked)} style={styles.checkbox}>
+              {inBehandelingChecked && <View style={styles.checkmark} />}
+            </TouchableOpacity>
+            <Text style={styles.checkboxLabel}>In behandeling</Text>
+          </View>
+          <View style={styles.checkboxContainer}>
+            <TouchableOpacity onPress={() => setGereedChecked(!gereedChecked)} style={styles.checkbox}>
+              {gereedChecked && <View style={styles.checkmark} />}
+            </TouchableOpacity>
+            <Text style={styles.checkboxLabel}>Gereed</Text>
+          </View>
         </View>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setHoogChecked(!hoogChecked)} style={styles.checkbox}>
-            {hoogChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Hoog</Text>
-        </View>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setNormaalChecked(!normaalChecked)} style={styles.checkbox}>
-            {normaalChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Normaal</Text>
-        </View>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setLaagChecked(!laagChecked)} style={styles.checkbox}>
-            {laagChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Laag</Text>
-        </View>
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Status</Text>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setNieuwChecked(!nieuwChecked)} style={styles.checkbox}>
-            {nieuwChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Nieuw</Text>
-        </View>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setInBehandelingChecked(!inBehandelingChecked)} style={styles.checkbox}>
-            {inBehandelingChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>In behandeling</Text>
-        </View>
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity onPress={() => setGereedChecked(!gereedChecked)} style={styles.checkbox}>
-            {gereedChecked && <View style={styles.checkmark} />}
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Gereed</Text>
-        </View>
-      </View>
-      <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Melder</Text>
+        {/* <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Melder</Text>
           <DropDownPicker
             open={melderOpen}
             value={melder}
@@ -113,10 +118,10 @@ const FilterComponent = ({ onClose }) => {
             // style={styles.dropdown}
             // dropDownContainerStyle={styles.dropdownContainer}
           />
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Gemaakt op</Text>
-        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateInput}>
+        </View> */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Gemaakt op</Text>
+          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateInput}>
             <Text style={styles.dateText}>
               {gemaaktOp.toLocaleDateString('nl-NL', {
                 day: '2-digit',
@@ -135,35 +140,35 @@ const FilterComponent = ({ onClose }) => {
               maximumDate={new Date(2030, 11, 31)}
             />
           )}
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>In de wacht</Text>
-        <View style={styles.switchContainer}>
-          <Switch
-            value={inDeWacht}
-            onValueChange={setInDeWacht}
-            trackColor={{ true: '#1D589789', false: '#CCCCCC' }}
-            thumbColor="#FFFFFF"
-          />
-          <Text style={styles.switchLabel}>{inDeWacht ? 'Ja' : 'Nee'}</Text>
         </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>In de wacht</Text>
+          <View style={styles.switchContainer}>
+            <Switch
+              value={inDeWacht}
+              onValueChange={setInDeWacht}
+              trackColor={{ true: '#1D589789', false: '#CCCCCC' }}
+              thumbColor="#FFFFFF"
+            />
+            <Text style={styles.switchLabel}>{inDeWacht ? 'Ja' : 'Nee'}</Text>
+          </View>
+        </View>
+        <TouchableOpacity onPress={onClose} style={styles.submitButton}>
+          <Text style={styles.submitButtonText}>Indienen</Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={onClose} style={styles.submitButton}>
-        <Text style={styles.submitButtonText}>Indienen</Text>
-      </TouchableOpacity>
-    </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'rgba(29, 88, 151, 0.8)',
-        paddingTop: 50,
-        paddingBottom: 50,
-        paddingHorizontal: 20,
-      },
+  container: {
+    flex: 1,
+    backgroundColor: 'rgba(29, 88, 151, 0.8)',
+    paddingTop: 50,
+    paddingBottom: 50,
+    paddingHorizontal: 20,
+  },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -222,11 +227,9 @@ const styles = StyleSheet.create({
   submitButton: {
     width: 70,
     height: 30,
-    backgroundColor: "white",
+    backgroundColor: 'white',
   },
-  submitButtonText: {
-
-  },
+  submitButtonText: {},
   closeButtonText: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -247,4 +250,5 @@ const styles = StyleSheet.create({
     color: 'black',
   },
 });
+
 export default FilterComponent;

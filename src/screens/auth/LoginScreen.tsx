@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { authenticateWithMicrosoftGraph, fetchUserDetails } from '../../../services/authService';
+import { authenticateAllAPIs, fetchUserDetailsFromMicrosoftGraph, getToken } from '../../../services/authService';
 
 interface LoginScreenProps {
   onLoginSuccess: (userDetails: any) => void;
@@ -10,9 +10,17 @@ interface LoginScreenProps {
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLoginSuccess }) => {
   const handleLogin = async () => {
     try {
-      // Step 1: Authenticate with Microsoft Graph to get user email
-      await authenticateWithMicrosoftGraph();
-      const userDetails = await fetchUserDetails();
+      // Authenticate all APIs
+      await authenticateAllAPIs();
+
+      // Fetch user details using Microsoft Graph access token
+      const msGraphAccessToken = await getToken('msGraph', 'User.Read openid profile offline_access', {
+        authorizationEndpoint: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+        tokenEndpoint: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+      });
+      
+      const userDetails = await fetchUserDetailsFromMicrosoftGraph(msGraphAccessToken);
+
       onLoginSuccess(userDetails);
     } catch (error) {
       Alert.alert('Login error', 'Failed to authenticate. Please try again.');
@@ -51,7 +59,7 @@ const styles = StyleSheet.create({
     top: 1,
     left: 1,
     right: -25,
-    width: 700,
+    width: 850,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,

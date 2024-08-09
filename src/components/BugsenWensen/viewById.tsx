@@ -1,10 +1,12 @@
+// viewById.tsx
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { WorkItem } from '../../core/utils/interfaces';
 import { invokeTicketProxy, ticketProxyEndpoints } from '../../../services/ticketProxy';
-import { useNavigation, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import SplashScreen from '../../screens/SplashScreen';
+import { DetailedViewItemRouteProp } from './../../core/utils/types'; 
 
 const removeHtmlTags = (str: string) => {
   return str.replace(/<\/?[^>]+(>|$)/g, "");
@@ -43,12 +45,9 @@ const getBadgeColor = (state: string) => {
   }
 };
 
-type DetailedViewItemProps = {
-  route: RouteProp<{ params: { itemId: string } }, 'params'>;
-};
-
-const DetailedViewItem: React.FC<DetailedViewItemProps> = ({ route }) => {
-  const { itemId } = route.params;
+const DetailedViewItem: React.FC = () => {
+  const route = useRoute<DetailedViewItemRouteProp>(); // Use the route hook with the correct type
+  const { itemId } = route.params; // Extract itemId from route params
   const [item, setItem] = useState<WorkItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);

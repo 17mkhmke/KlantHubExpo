@@ -2,8 +2,17 @@ import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { licenties } from './../core/utils/products';
 
-const ProductSelector = ({ onSelect }) => {
-  const renderItem = ({ item }) => (
+interface Product {
+  name: string;
+  logo: any; // Replace 'any' with the correct type for your images if possible, like ImageSourcePropType
+}
+
+interface ProductSelectorProps {
+  onSelect: (item: Product) => void;
+}
+
+const ProductSelector: React.FC<ProductSelectorProps> = ({ onSelect }) => {
+  const renderItem = ({ item }: { item: Product }) => (
     <TouchableOpacity
       style={styles.itemContainer}
       onPress={() => onSelect(item)}
