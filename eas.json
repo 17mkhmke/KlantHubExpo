@@ -2,9 +2,8 @@
   "cli": {
     "version": ">= 9.0.8"
   },
-  "build": {
-    "development": {
-      "distribution": "internal",
+ "build": {
+    "production": {
       "android": {
         "image": "latest"
       },
