@@ -28,7 +28,8 @@
     "extra": {
       "eas": {
         "projectId": "48cfa1fe-c63c-4d45-b2d0-978c78d0dfcc",
-        "redirectUri": "exp://10.0.0.66:8081"
+        "redirectUri": "exp://10.0.0.66:8081",
+        "owner": "mkhuseli"
       }
     }
   }
