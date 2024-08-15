@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Text, ScrollView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import CardGrid from '../components/Zaken/CardFrid';
 import ZakenForm from '../components/Zaken/ZakenForm';
 import FilterComponent from '../components/Zaken/Filte';
 import { invokeDataBalkRobot, dataBalkRobotEndpoints } from './../../services/dataBalkRobot';
 import { Incident } from './../core/utils/interfaces';
-
 
 const addZaak = require('./../../assets/2. Icons/Add New White.png');
 const searchIcon = require('./../../assets/2. Icons/Search White.png');
@@ -20,16 +19,18 @@ const ZakenScreen: React.FC = () => {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [inDeWacht, setInDeWacht] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const endpoint = `${dataBalkRobotEndpoints.getResolvedZaken}${accountId}`;
+      const endpoint = inDeWacht
+        ? `${dataBalkRobotEndpoints.getActiveZaken}${accountId}`
+        : `${dataBalkRobotEndpoints.getResolvedZaken}${accountId}`;
 
       console.log('Fetching data from endpoint:', endpoint);
 
       const response = await invokeDataBalkRobot<Incident[]>(endpoint, 'GET');
-
 
       if (!Array.isArray(response)) {
         throw new Error('Invalid response format: Response is not an array');
@@ -43,14 +44,19 @@ const ZakenScreen: React.FC = () => {
       setError(error.message || 'An unknown error occurred');
       setLoading(false);
     }
-  }, []);
+  }, [inDeWacht]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  const handleSubmit = (formData: any) => {
+  const handleFilterChange = (inDeWacht: boolean) => {
+    setInDeWacht(inDeWacht);
+  };
+
+  const handleSubmit = async (formData: any) => {
     console.log('Form submitted:', formData);
+    await fetchData();
     setShowForm(false);
   };
 
@@ -91,7 +97,7 @@ const ZakenScreen: React.FC = () => {
       </View>
       <CardGrid data={incidents} />
       <ZakenForm visible={showForm} setVisible={setShowForm} onSubmit={handleSubmit} />
-      {showFilter && <FilterComponent onClose={() => setShowFilter(false)} />}
+      {showFilter && <FilterComponent onClose={() => setShowFilter(false)} onFilterChange={handleFilterChange} />}
     </View>
   );
 };

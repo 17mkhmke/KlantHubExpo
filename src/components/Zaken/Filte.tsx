@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Switch, Modal, Platform } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { View, Text, StyleSheet, TouchableOpacity, Switch, Modal } from 'react-native';
 
 interface FilterComponentProps {
-  onClose: () => void; // Type for the onClose prop
+  onClose: () => void;
+  onFilterChange: (inDeWacht: boolean) => void;
 }
 
-const FilterComponent: React.FC<FilterComponentProps> = ({ onClose }) => {
+const FilterComponent: React.FC<FilterComponentProps> = ({ onClose, onFilterChange }) => {
   const [verzoekChecked, setVerzoekChecked] = useState(false);
   const [insidentChecked, setInsidentChecked] = useState(false);
   const [kritiekChecked, setKritiekChecked] = useState(false);
@@ -17,21 +16,11 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ onClose }) => {
   const [nieuwChecked, setNieuwChecked] = useState(false);
   const [inBehandelingChecked, setInBehandelingChecked] = useState(false);
   const [gereedChecked, setGereedChecked] = useState(false);
-  const [melder, setMelder] = useState<string | null>(null); // Specify the type of melder
-  const [melderOpen, setMelderOpen] = useState(false);
-  const [melderItems, setMelderItems] = useState([
-    { label: 'Jos Balk', value: 'jos_balk' },
-    { label: 'Martine Naiber', value: 'john_doe' },
-  ]);
-  const [gemaaktOp, setGemaaktOp] = useState<Date>(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [inDeWacht, setInDeWacht] = useState(false);
 
-  // Define the types for event and selectedDate
-  const onDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    const currentDate = selectedDate || gemaaktOp;
-    setShowDatePicker(Platform.OS === 'ios');
-    setGemaaktOp(currentDate);
+  const handleSwitchChange = (value: boolean) => {
+    setInDeWacht(value);
+    onFilterChange(value); // Notify the parent component of the change
   };
 
   return (
@@ -104,49 +93,12 @@ const FilterComponent: React.FC<FilterComponentProps> = ({ onClose }) => {
             <Text style={styles.checkboxLabel}>Gereed</Text>
           </View>
         </View>
-        {/* <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Melder</Text>
-          <DropDownPicker
-            open={melderOpen}
-            value={melder}
-            items={melderItems}
-            setOpen={setMelderOpen}
-            setValue={setMelder}
-            setItems={setMelderItems}
-            searchable={true}
-            placeholder="Selecteer melder"
-            // style={styles.dropdown}
-            // dropDownContainerStyle={styles.dropdownContainer}
-          />
-        </View> */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Gemaakt op</Text>
-          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateInput}>
-            <Text style={styles.dateText}>
-              {gemaaktOp.toLocaleDateString('nl-NL', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric',
-              })}
-            </Text>
-          </TouchableOpacity>
-          {showDatePicker && (
-            <DateTimePicker
-              value={gemaaktOp}
-              mode="date"
-              display="default"
-              onChange={onDateChange}
-              minimumDate={new Date(2020, 0, 1)}
-              maximumDate={new Date(2030, 11, 31)}
-            />
-          )}
-        </View>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>In de wacht</Text>
+          <Text style={styles.sectionTitle}>Open</Text>
           <View style={styles.switchContainer}>
             <Switch
               value={inDeWacht}
-              onValueChange={setInDeWacht}
+              onValueChange={handleSwitchChange}
               trackColor={{ true: '#1D589789', false: '#CCCCCC' }}
               thumbColor="#FFFFFF"
             />
@@ -208,13 +160,6 @@ const styles = StyleSheet.create({
   checkboxLabel: {
     color: 'white',
     fontSize: 16,
-  },
-  input: {
-    backgroundColor: 'white',
-    borderRadius: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    color: 'black',
   },
   switchContainer: {
     flexDirection: 'row',

@@ -83,10 +83,10 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.anonymous.KlantHub'
+    namespace 'com.klantHub'
     defaultConfig {
-        manifestPlaceholders = [appAuthRedirectScheme: 'msauth.klantHub']
-        applicationId 'com.anonymous.KlantHub'
+        manifestPlaceholders = [appAuthRedirectScheme: 'msauth://com.klantHub/2jmj7l5rSw0yVb%2FvlWAYkK%2FYBwk%3D']
+        applicationId 'com.klantHub'      
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

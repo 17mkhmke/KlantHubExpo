@@ -23,7 +23,7 @@ const openLink = (url: string) => {
   });
 };
 
-const filterAppointments = (appointment, filters) => {
+const filterAppointments = (appointment: Appointment, filters: AfsprakenCardsProps['filters']) => {
   const filterRoles = {
     verzoek: ["Service Specialist"],
     insident: ["Manager Onboarding", "Project Eigenaar", "Consultant"],

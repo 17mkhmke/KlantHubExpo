@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   TextInput,
@@ -43,7 +43,6 @@ const typeOptions = [
   { label: 'Verzoek', value: '564710001' },
 ];
 
-// Set "GRIP" as the only option for Licentie
 const licenseOptions = [
   { label: 'GRIP', value: '1ae75dfb-da49-ee11-be6e-000d3aaae30e' },
 ];
@@ -56,11 +55,11 @@ const ZakenForm: React.FC<ZakenFormProps> = ({
   const [formData, setFormData] = useState<Incident>({
     onderwerp: '',
     beschrijving: '',
-    prioriteit: '2', // Default to 'Normaal'
+    prioriteit: '2',
     type: '',
     uwKenmerk: '',
-    reproduceerbaar: true, // Default to true
-    license: '1ae75dfb-da49-ee11-be6e-000d3aaae30e', // Default to 'GRIP'
+    reproduceerbaar: true, 
+    license: '1ae75dfb-da49-ee11-be6e-000d3aaae30e', 
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [errorText, setErrorText] = useState<string>('');
@@ -72,7 +71,7 @@ const ZakenForm: React.FC<ZakenFormProps> = ({
 
   const handleSubmit = async () => {
     setErrorText('');
-    
+
     if (formData.onderwerp === '' || formData.type === '' || formData.beschrijving === '' || formData.prioriteit === '') {
       return setErrorText('Zorg ervoor dat onderwerp, type en beschrijving zijn ingevuld');
     }
@@ -82,24 +81,27 @@ const ZakenForm: React.FC<ZakenFormProps> = ({
       const endpoint = dataBalkRobotEndpoints.postZaak;
       console.log('Submitting form data to:', endpoint);
 
-      const response = await invokeDataBalkRobot(endpoint, 'POST', {
+      const payload = {
         title: formData.onderwerp,
         description: formData.beschrijving,
-        customerId: "8e4ea267-51a5-ee11-be37-6045bd89b521", 
-        crmUserId: "00000000-0000-0000-0000-000000000000", 
+        customerId: "fdabf763-eb00-ec11-94ef-000d3a493499",
+        crmUserId: "00000000-0000-0000-0000-000000000000",
         licentie: formData.license,
         type: formData.type,
-        fibo: 564710001,
+        fibo: 564710001, 
         prioriteit: parseInt(formData.prioriteit, 10),
         reproduceerbaar: formData.reproduceerbaar ? 799880000 : 799880001,
         kenmerkKlant: formData.uwKenmerk,
-      });
+      };
+
+      console.log('Payload:', JSON.stringify(payload));
+
+      const response = await invokeDataBalkRobot(endpoint, 'POST', payload);
 
       console.log('Case created successfully:', response);
       Alert.alert('Success', 'Case created successfully!');
       onSubmit(formData);
 
-      // Reset form and close modal
       setFormData({
         onderwerp: '',
         beschrijving: '',
@@ -107,12 +109,14 @@ const ZakenForm: React.FC<ZakenFormProps> = ({
         type: '',
         uwKenmerk: '',
         reproduceerbaar: true,
-        license: '1ae75dfb-da49-ee11-be6e-000d3aaae30e', // Reset to 'GRIP'
+        license: '1ae75dfb-da49-ee11-be6e-000d3aaae30e', 
       });
       setVisible(false);
     } catch (error: any) {
       console.error('Error during form submission:', error);
-      Alert.alert('Error', `Failed to create case. Error: ${error.message || error.toString()}`);
+      
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to create case';
+      Alert.alert('Error', `Failed to create case. Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -182,9 +186,9 @@ const ZakenForm: React.FC<ZakenFormProps> = ({
                 items={priorityOptions}
                 style={pickerSelectStyles}
                 value={formData.prioriteit}
-                useNativeAndroidPickerStyle={false} // disables default styling on Android
+                useNativeAndroidPickerStyle={false} 
                 Icon={() => {
-                  return <Text style={pickerSelectStyles.icon}>▼</Text>; // This adds a down arrow icon to the picker
+                  return <Text style={pickerSelectStyles.icon}>▼</Text>;
                 }}
               />
             </View>
@@ -195,9 +199,9 @@ const ZakenForm: React.FC<ZakenFormProps> = ({
                 items={typeOptions}
                 style={pickerSelectStyles}
                 value={formData.type}
-                useNativeAndroidPickerStyle={false} // disables default styling on Android
+                useNativeAndroidPickerStyle={false}
                 Icon={() => {
-                  return <Text style={pickerSelectStyles.icon}>▼</Text>; // This adds a down arrow icon to the picker
+                  return <Text style={pickerSelectStyles.icon}>▼</Text>;
                 }}
               />
             </View>
@@ -208,9 +212,9 @@ const ZakenForm: React.FC<ZakenFormProps> = ({
                 items={licenseOptions}
                 style={pickerSelectStyles}
                 value={formData.license}
-                useNativeAndroidPickerStyle={false} // disables default styling on Android
+                useNativeAndroidPickerStyle={false}
                 Icon={() => {
-                  return <Text style={pickerSelectStyles.icon}>▼</Text>; // This adds a down arrow icon to the picker
+                  return <Text style={pickerSelectStyles.icon}>▼</Text>; 
                 }}
               />
             </View>
@@ -239,7 +243,7 @@ const ZakenForm: React.FC<ZakenFormProps> = ({
             <TouchableOpacity style={styles.uploadButton} onPress={handleImagePicker}>
               <Text style={styles.uploadButtonText}>Upload hier</Text>
             </TouchableOpacity>
-            <Button title={loading ? 'Bezig...' : 'Indienen'} onPress={handleSubmit} color="white" disabled={loading} />
+            <Button title={loading ? 'Bezig...' : 'Indienen'} onPress={handleSubmit} color="black" disabled={loading} />
           </View>
         </ScrollView>
       </View>
@@ -255,14 +259,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(29, 88, 151, 0.6)',
   },
   scrollContainer: {
-    width: '100%', // Make the form take up the full width
+    width: '100%', 
     paddingVertical: 20,
   },
   modalContainer: {
     backgroundColor: 'rgba(29, 88, 151, 0.8)',
     borderRadius: 10,
     padding: 20,
-    width: 400, // Use the full width of the screen
+    width: 400, 
   },
   modalHeader: {
     flexDirection: 'row',
@@ -337,7 +341,7 @@ const pickerSelectStyles = StyleSheet.create({
     borderColor: 'white',
     borderRadius: 5,
     color: 'white',
-    paddingRight: 30, // to ensure the text is never behind the icon
+    paddingRight: 30, 
     backgroundColor: 'rgba(29, 88, 151, 0.6)',
     marginBottom: 10,
   },
@@ -349,7 +353,7 @@ const pickerSelectStyles = StyleSheet.create({
     borderColor: 'white',
     borderRadius: 5,
     color: 'white',
-    paddingRight: 30, // to ensure the text is never behind the icon
+    paddingRight: 30, 
     backgroundColor: 'rgba(29, 88, 151, 0.6)',
     marginBottom: 10,
   },
@@ -361,4 +365,5 @@ const pickerSelectStyles = StyleSheet.create({
     color: 'white',
   },
 });
+
 export default ZakenForm;

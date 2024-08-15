@@ -13,7 +13,7 @@ import ProductGrid from './Relatie/RelatieScreen';
 import ProductDetails from './Relatie/routekaartQuery';
 import KnowledgeArticles from '../screens/knowledgeArticles';
 import KnowledgeArticleDetailScreen from './Kennisbank/KnowledgeArticleDetailScreen';
-import IncidentDetail from './Zaken/IncidentDetail'; // Import the IncidentDetail screen
+import IncidentDetail from './Zaken/IncidentDetail';
 import { RootStackParamList } from './../core/utils/types';
 
 const Tab = createBottomTabNavigator();
@@ -157,7 +157,7 @@ const Navigation: React.FC<NavigationProps> = ({ user }) => {
         name="IncidentDetail"
         component={IncidentDetail}
         options={({ route }) => ({
-          header: () => <Header user={user} screenName={`Incident ${route.params.incident.zaaknummer}`} />,
+          header: () => <Header user={user} />,
         })}
       />
     </Stack.Navigator>

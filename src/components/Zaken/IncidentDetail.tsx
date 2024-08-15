@@ -1,19 +1,30 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Incident } from '../../core/utils/interfaces';
 
-const IncidentDetail = ({ route }) => {
-  const navigation = useNavigation();
+
+type RootStackParamList = {
+  IncidentDetail: { incident: Incident };
+};
+
+type IncidentDetailRouteProp = RouteProp<RootStackParamList, 'IncidentDetail'>;
+type IncidentDetailNavigationProp = StackNavigationProp<RootStackParamList, 'IncidentDetail'>;
+
+interface IncidentDetailProps {
+  route: IncidentDetailRouteProp;
+  navigation: IncidentDetailNavigationProp;
+}
+
+const IncidentDetail: React.FC<IncidentDetailProps> = ({ route, navigation }) => {
   const { incident } = route.params;
-
   const {
     zaaknummer,
     type,
     onderwerp,
     beschrijving,
-    productEigenaar,
-    productEigenaarPhoto,
     licentie,
     fibo,
     prioriteit,

@@ -30,7 +30,6 @@ const AfsprakenScreen = () => {
     setIsSearchMode(true);
   };
 
-  // Explicitly define the type for the 'text' parameter
   const handleSearchChange = (text: string) => {
     setSearchQuery(text);
   };
@@ -40,7 +39,6 @@ const AfsprakenScreen = () => {
     setIsSearchMode(false);
   };
 
-  // Explicitly define the type for the 'newFilters' parameter
   const handleFilterChange = (newFilters: Filters) => {
     setFilters(newFilters);
   };

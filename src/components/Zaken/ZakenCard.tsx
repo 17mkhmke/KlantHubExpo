@@ -5,7 +5,10 @@ import { useNavigation } from '@react-navigation/native';
 
 interface CardProps {
   data: Incident;
+  onPress: () => void;
+  isExpanded: boolean;
 }
+
 
 const Card: React.FC<CardProps> = ({ data }) => {
   const navigation = useNavigation();
